@@ -1,7 +1,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 ARG BASE_NAMESPACE
-ARG BASE_IMG="qpod/base"
+ARG BASE_IMG="opencv"
 FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 
 LABEL maintainer="haobibo@gmail.com"
@@ -11,21 +11,8 @@ COPY work /opt/utils/
 RUN cd /tmp && source /opt/utils/script-utils.sh \
  && install_apt       /opt/utils/install_list_OpenFace.apt \
  && ln /dev/null /dev/raw1394 \
- ## Download and build OpenCV
- && install_tar_gz https://github.com/opencv/opencv/archive/refs/tags/4.5.5.tar.gz \
- && mv /opt/opencv-* /tmp/opencv \
- && cd /tmp/opencv && mkdir -p build && cd build \
- && cmake \
-     -D CMAKE_BUILD_TYPE=RELEASE \
-     -D CMAKE_INSTALL_PREFIX=/opt/opencv \
-     -D WITH_TBB=ON \
-     -D WITH_EIGEN=ON \
-     -D WITH_CUDA=OFF \
-     -D PYTHON_DEFAULT_EXECUTABLE=`which python` \
-     -D BUILD_SHARED_LIBS=ON  .. \
- && make -j8 && make install \
  ## Download and build dlib
- && install_zip http://dlib.net/files/dlib-19.17.zip \
+ && install_zip http://dlib.net/files/dlib-19.23.zip \
  && mv /opt/dlib-* /tmp/dlib \
  && cd /tmp/dlib && mkdir -p build && cd build \
  && cmake \

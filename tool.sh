@@ -5,10 +5,10 @@ export REGISTRY_URL="docker.io"   # docker.io or other registry URL, DOCKER_REGI
 export BUILDKIT_PROGRESS="plain"  # Full logs for CI build.
 # DOCKER_REGISTRY_USER and DOCKER_REGISTRY_PASSWORD is required for docker image push, they should be set in CI secrets.
 
-CI_PROJECT_NAME=${GITHUB_REPOSITORY:-"QPod/docker-images"}
-CI_PROJECT_BRANCH=${GITHUB_HEAD_REF:-"master"}
+CI_PROJECT_NAME=${GITHUB_REPOSITORY:-"QPod/media-lab"}
+CI_PROJECT_BRANCH=${GITHUB_HEAD_REF:-"main"}
 
-if [ "${CI_PROJECT_BRANCH}" = "master" ] ; then
+if [ "${CI_PROJECT_BRANCH}" = "main" ] ; then
     export CI_PROJECT_NAMESPACE=$(echo "$(dirname ${CI_PROJECT_NAME})") ;
 else
     export CI_PROJECT_NAMESPACE=$(echo "$(dirname ${CI_PROJECT_NAME})")0${CI_PROJECT_BRANCH} ;

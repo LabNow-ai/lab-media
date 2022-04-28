@@ -16,13 +16,23 @@ env:
   DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
 jobs:
-  qpod_OpenFace:
-    name: qpod/openface
+  qpod_OpenCV:
+    name: qpod/opencv
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: |
           source ./tool.sh
-          build_image openface latest docker_OpenFace/OpenFace.Dockerfile \
-            --build-arg "BASE_IMG=base"
+          build_image opencv latest docker_OpenCV/Dockerfile
+          push_image
+
+  qpod_OpenFace:
+    name: qpod/openface
+    needs: qpod_OpenCV
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          source ./tool.sh
+          build_image openface latest docker_OpenFace/Dockerfile
           push_image
