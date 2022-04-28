@@ -1,0 +1,28 @@
+name: qpod-media-lab
+
+on:
+  pull_request:
+    paths-ignore:
+      - "*.md"
+
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "*.md"
+
+env:
+  DOCKER_REGISTRY_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
+  DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+jobs:
+  qpod_OpenFace:
+    name: qpod/openface
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          source ./tool.sh && free_diskspace
+          build_image openface latest docker_open_face/Dockerfile \
+            --build-arg "BASE_IMG=base"
+          push_image
