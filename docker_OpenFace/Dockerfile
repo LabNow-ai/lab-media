@@ -26,7 +26,7 @@ RUN cd /tmp && source /opt/utils/script-utils.sh \
  && mv /opt/OpenFace-* /tmp/OpenFace \
  && cd /tmp/OpenFace \
  && sed  -i 's/3.3/4.1/g' CMakeLists.txt \
- && mkdir -p build && cd build \
+ && mkdir -pv build && cd build \
  && cmake -D CMAKE_BUILD_TYPE=RELEASE .. \
  && make -j8 \
  && mv /tmp/OpenFace/build/bin /opt/OpenFace \
@@ -36,6 +36,6 @@ RUN cd /tmp && source /opt/utils/script-utils.sh \
  && wget -nv https://www.dropbox.com/s/ixt4vkbmxgab1iu/cen_patches_0.50_of.dat?dl=1 -O cen_patches_0.50_of.dat \
  && wget -nv https://www.dropbox.com/s/2t5t1sdpshzfhpj/cen_patches_1.00_of.dat?dl=1 -O cen_patches_1.00_of.dat \
  ## Clean Up
- && cd /opt/OpenFace && install__clean
+ && install__clean
 
 WORKDIR /opt/OpenFace

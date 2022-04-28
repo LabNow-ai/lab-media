@@ -25,6 +25,6 @@ RUN cd /tmp && source /opt/utils/script-utils.sh \
      -D BUILD_SHARED_LIBS=ON  .. \
  && make -j8 && make install \
  ## Clean Up
- && cd /opt/OpenFace && install__clean
+ && install__clean
 
-WORKDIR /opt/OpenFace
+WORKDIR /opt/opencv
