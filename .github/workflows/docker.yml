@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          source ./tool.sh && free_diskspace
-          build_image openface latest docker_open_face/Dockerfile \
+          source ./tool.sh
+          build_image openface latest docker_OpenFace/OpenFace.Dockerfile \
             --build-arg "BASE_IMG=base"
           push_image
