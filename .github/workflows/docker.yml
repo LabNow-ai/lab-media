@@ -16,6 +16,26 @@ env:
   DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
 jobs:
+  qpod_nvidia-docker2:
+    name: qpod/nvidia-docker2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          source ./tool.sh
+          build_image nvidia-docker2 latest docker_nvidia-docker2/Dockerfile
+          push_image
+
+  qpod_OpenFace-src:
+    name: qpod/openface-src
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          source ./tool.sh
+          build_image openface-src latest docker_OpenFace-src/Dockerfile
+          push_image
+
   qpod_OpenCV:
     name: qpod/opencv
     runs-on: ubuntu-latest
