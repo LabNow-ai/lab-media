@@ -12,7 +12,7 @@ RUN cd /tmp && source /opt/utils/script-utils.sh \
  && install_apt       /opt/utils/install_list_OpenFace.apt \
  && ln /dev/null /dev/raw1394 \
  ## Download and build dlib
- && install_zip http://dlib.net/files/dlib-19.23.zip \
+ && install_tar_gz https://github.com/davisking/dlib/archive/refs/tags/v19.23.tar.gz \
  && mv /opt/dlib-* /tmp/dlib \
  && cd /tmp/dlib && mkdir -p build && cd build \
  && cmake \
@@ -31,10 +31,11 @@ RUN cd /tmp && source /opt/utils/script-utils.sh \
  && make -j8 \
  && mv /tmp/OpenFace/build/bin /opt/OpenFace \
  && cd /opt/OpenFace/model/patch_experts \
- && wget -nv https://www.dropbox.com/s/7na5qsjzz8yfoer/cen_patches_0.25_of.dat?dl=1 -O cen_patches_0.25_of.dat \
- && wget -nv https://www.dropbox.com/s/k7bj804cyiu474t/cen_patches_0.35_of.dat?dl=1 -O cen_patches_0.35_of.dat \
- && wget -nv https://www.dropbox.com/s/ixt4vkbmxgab1iu/cen_patches_0.50_of.dat?dl=1 -O cen_patches_0.50_of.dat \
- && wget -nv https://www.dropbox.com/s/2t5t1sdpshzfhpj/cen_patches_1.00_of.dat?dl=1 -O cen_patches_1.00_of.dat \
+ # model download URLs: https://github.com/TadasBaltrusaitis/OpenFace/wiki/Model-download#manual-download
+ && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153072&authkey=AKqoZtcN0PSIZH4' -O cen_patches_0.25_of.dat \
+ && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153079&authkey=ANpDR1n3ckL_0gs' -O cen_patches_0.35_of.dat \
+ && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153074&authkey=AGi-e30AfRc_zvs' -O cen_patches_0.50_of.dat \
+ && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153070&authkey=AD6KjtYipphwBPc' -O cen_patches_1.00_of.dat \
  ## Clean Up
  && install__clean
 
