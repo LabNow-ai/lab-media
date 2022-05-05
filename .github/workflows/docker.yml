@@ -7,7 +7,7 @@ on:
 
   push:
     branches:
-      - master
+      - main
     paths-ignore:
       - "*.md"
 
@@ -56,3 +56,49 @@ jobs:
           source ./tool.sh
           build_image openface latest docker_OpenFace/Dockerfile
           push_image
+
+  qpod_HuggingFaceModels:
+    name: qpod/huggingface-models
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          source ./tool.sh
+          build_image_hf_model() {
+            HF_MODEL_NAEM=$1; HF_MODEL_TAG=$(echo $1 | sed 's/\//./g');
+            build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-models/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAEM}" ;
+            push_image ;
+          }
+          build_image_hf_model  bert-base-cased
+          # build_image_hf_model  bert-base-uncased
+          # build_image_hf_model  bert-large-cased
+          # build_image_hf_model  bert-base-chinese
+          # build_image_hf_model  roberta-base
+          # build_image_hf_model  roberta-large
+          # build_image_hf_model  distilroberta-base
+          # build_image_hf_model  distilbert-base-cased
+          # build_image_hf_model  distilbert-base-uncased
+          # build_image_hf_model  distilbert-base-uncased-finetuned-sst-2-english
+          # build_image_hf_model  gpt2
+          # build_image_hf_model  gpt2-medium
+          # build_image_hf_model  gpt2-large
+          # build_image_hf_model  distilgpt2
+          # build_image_hf_model  t5-small
+          # build_image_hf_model  t5-base
+          # build_image_hf_model  t5-large
+          # build_image_hf_model  xlnet-base-cased
+          # build_image_hf_model  xlnet-large-cased
+          # build_image_hf_model  microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract
+          # build_image_hf_model  microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext
+          # build_image_hf_model  fnlp/bart-base-chinese
+          # build_image_hf_model  fnlp/bart-large-chinese
+          # build_image_hf_model  fnlp/cpt-base
+          # build_image_hf_model  fnlp/cpt-large
+          # build_image_hf_model  fnlp/elasticbert-base
+          # build_image_hf_model  fnlp/elasticbert-large
+          # build_image_hf_model  hfl/chinese-bert-wwm-ext
+          # build_image_hf_model  hfl/chinese-bert-wwm
+          # build_image_hf_model  hfl/chinese-roberta-wwm-ext
+          # build_image_hf_model  hfl/chinese-roberta-wwm-ext-large
+          # build_image_hf_model  hfl/chinese-xlnet-base
+          # build_image_hf_model  hfl/chinese-xlnet-mid
