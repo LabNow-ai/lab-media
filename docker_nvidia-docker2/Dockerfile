@@ -8,5 +8,7 @@ RUN mkdir -pv libnvidia-container nvidia-container-runtime nvidia-docker \
  && pwd && ls -alh && du -h -d1
 
 FROM busybox
+LABEL maintainer="haobibo@gmail.com"
+LABEL usage="docker run --rm -it -v $(pwd):/tmp `docker-image-name`"
 CMD ["sh", "-c", "ls -alh /home && cp -r /home/* /tmp/"]
 COPY --from=builder /tmp/data /home/

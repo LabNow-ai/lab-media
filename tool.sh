@@ -18,7 +18,7 @@ export NAMESPACE=$(echo "${REGISTRY_URL:-"docker.io"}/${CI_PROJECT_NAMESPACE}" |
 echo "--------> CI_PROJECT_NAMESPACE=${CI_PROJECT_NAMESPACE}"
 echo "--------> Docker Repo=${NAMESPACE}"
 
-echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+jq '.experimental=true'  /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/
 sudo service docker restart
 
 build_image() {
@@ -26,6 +26,12 @@ build_image() {
     IMG=$1; TAG=$2; FILE=$3; shift 3; VER=`date +%Y.%m%d`;
     docker build --squash --compress --force-rm=true -t "${NAMESPACE}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${NAMESPACE}" "$@" "$(dirname $FILE)" ;
     docker tag "${NAMESPACE}/${IMG}:${TAG}" "${NAMESPACE}/${IMG}:${VER}" ;
+}
+
+build_image_no_tag() {
+    echo $@ ;
+    IMG=$1; TAG=$2; FILE=$3; shift 3; 
+    docker build --squash --compress --force-rm=true -t "${NAMESPACE}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${NAMESPACE}" "$@" "$(dirname $FILE)" ;
 }
 
 build_image_common() {
