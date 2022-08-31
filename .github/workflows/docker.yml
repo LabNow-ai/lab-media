@@ -39,14 +39,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: source ./tool.sh && build_image paddleocr-cuda102 latest	docker_PaddleOCR/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}"		&& push_image
+      - run: source ./tool.sh && build_image paddleocr-cuda102 latest	docker_PaddleOCR/Dockerfile --build-arg "BASE_IMG=paddle-cuda102"		&& push_image
 
   qpod_PaddleOCR_cuda116:
     name: qpod/paddleocr_cuda116
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: source ./tool.sh && build_image paddleocr-cuda116 latest	docker_PaddleOCR/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}"		&& push_image
+      - run: source ./tool.sh && build_image paddleocr-cuda116 latest	docker_PaddleOCR/Dockerfile --build-arg "BASE_IMG=paddle-cuda116"		&& push_image
 
 
   qpod_OpenFace-src:
@@ -54,17 +54,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: source ./tool.sh && build_image openface-src latest		docker_OpenFace/src.Dockerfile				&& push_image
+      - run: source ./tool.sh && build_image openface-src latest		docker_OpenFace/src.Dockerfile			&& push_image
 
   qpod_OpenFace:
     name: qpod/openface
-    needs: qpod_OpenCV
+    needs: [ "qpod_OpenCV", "qpod_OpenFace-src" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: source ./tool.sh && build_image openface latest				docker_OpenFace/Dockerfile				&& push_image
+      - run: source ./tool.sh && build_image openface latest			docker_OpenFace/Dockerfile				&& push_image
 
-
+  # To build HF model image for a single model, simple run: `build_image_hf_model bert-base-cased`
   qpod_HuggingFaceModels:
     name: qpod/huggingface-models
     runs-on: ubuntu-latest
@@ -74,14 +74,11 @@ jobs:
           source ./tool.sh
           build_image_hf_model() {
             HF_MODEL_NAME=$1; HF_MODEL_TAG=$(echo $1 | sed 's/\//./g');
-            echo "Pulling HuggingFace Model: ${HF_MODEL_NAME}..."
+            echo "HF model to pull and build image: ${HF_MODEL_NAME}..."
             build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-models/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}" ;
             push_image ;
           }
-          export -f build_image_hf_model
-
-          cat docker_HuggingFace-models/list_hf_models.txt | read -r -d '' -a LIST_MODELS_BAK
+          export -f build_image_hf_model build_image_no_tag push_image
           LIST_MODELS=("LTP/tiny")
-          
-          # build_image_hf_model bert-base-cased
-          echo ${LIST_MODELS[@]}  | xargs -n 1 -P 10 -I {} bash -c 'build_image_hf_model "$@"' _ {}
+          # cat docker_HuggingFace-models/list_hf_models.txt | read -rd '' -a LIST_MODELS_BAK
+          echo ${LIST_MODELS[@]}  | xargs -n1 -I {} bash -c 'build_image_hf_model "$@"' _ {} ;
