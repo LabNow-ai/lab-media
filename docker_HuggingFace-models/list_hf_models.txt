@@ -1,0 +1,11 @@
+bert-base-cased     bert-base-uncased       bert-large-cased        bert-base-chinese
+distilroberta-base  distilbert-base-cased   distilbert-base-uncased distilbert-base-uncased-finetuned-sst-2-english
+t5-small            t5-base                 t5-large
+gpt2                gpt2-medium             gpt2-large              distilgpt2
+roberta-base        roberta-large           xlnet-base-cased        xlnet-large-cased
+LTP/tiny            LTP/smallLTP/base       LTP/base1               LTP/base2
+fnlp/cpt-base       fnlp/cpt-large          fnlp/bart-base-chinese  fnlp/bart-large-chinese    fnlp/elasticbert-base    fnlp/elasticbert-large
+hfl/chinese-bert-wwm-ext                    hfl/chinese-bert-wwm
+hfl/chinese-roberta-wwm-ext                 hfl/chinese-roberta-wwm-ext-large
+hfl/chinese-xlnet-base                      hfl/chinese-xlnet-mid
+microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract                microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext
