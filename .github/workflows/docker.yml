@@ -46,7 +46,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: source ./tool.sh && build_image paddleocr-cuda116 latest	docker_PaddleOCR/Dockerfile --build-arg "BASE_IMG=paddle-cuda116"		&& push_image
+      - run: |
+          source ./tool.sh
+          build_image paddleocr-cuda116 latest	docker_PaddleOCR/Dockerfile --build-arg "BASE_IMG=paddle-cuda116" && push_image
+          build_image paddleocr-models  latest	docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda116" && push_image
 
 
   qpod_OpenFace-src:
