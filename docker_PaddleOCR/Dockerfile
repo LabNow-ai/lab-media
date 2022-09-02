@@ -6,9 +6,12 @@ FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 
 LABEL maintainer="haobibo@gmail.com"
 
+COPY work /opt/utils/
+
 RUN source /opt/utils/script-setup.sh \
  && apt-get -qq update -yq --fix-missing && apt-get -qq install -yq --no-install-recommends libgl1 libglib2.0-0 \
  && pip install -U opencv-python opencv-contrib-python scikit-image imgaug \
     shapely pyclipper attrdict3 lxml lmdb \
  && pip install -U --no-deps paddleocr \
+ && python3 /opt/utils/download_paddleocr_models.py && mv ~/.paddleocr /opt/ && tree /opt/.paddleocr\
  && install__clean && list_installed_packages
