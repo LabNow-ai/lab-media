@@ -13,5 +13,5 @@ RUN source /opt/utils/script-setup.sh \
  && pip install -U opencv-python opencv-contrib-python scikit-image imgaug \
     shapely pyclipper attrdict3 lxml lmdb \
  && pip install -U --no-deps paddleocr \
- && python3 /opt/utils/download_paddleocr_models.py && mv ~/.paddleocr /opt/ && tree /opt/.paddleocr\
+ && python3 /opt/utils/download_paddleocr_models.py && mv ~/.paddleocr /opt/ && tree /opt/.paddleocr \
  && install__clean && list_installed_packages
