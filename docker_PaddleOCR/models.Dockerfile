@@ -3,7 +3,8 @@
 ARG BASE_NAMESPACE
 ARG BASE_IMG="paddle-cuda116"
 FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG} AS builder
-RUN tree /opt/.paddleocr
+RUN python3 /opt/utils/download_paddleocr_models.py \
+ && mv ~/.paddleocr /opt/ && tree /opt/.paddleocr
 
 FROM busybox
 COPY --from=builder /opt/.paddleocr /home/
