@@ -6,7 +6,7 @@ FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 
 LABEL maintainer="haobibo@gmail.com"
 
-COPY work /opt/utils/
+# COPY work /opt/utils/
 
 RUN source /opt/utils/script-setup.sh \
  # Step 1. install/update paddlepaddle

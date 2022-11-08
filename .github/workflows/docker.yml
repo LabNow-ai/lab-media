@@ -55,7 +55,7 @@ jobs:
 
 
   qpod_DocumentAI_cuda112:
-    name: qpod/doc_ai_cuda112
+    name: qpod/doc-ai-cuda112
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
