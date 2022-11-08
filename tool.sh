@@ -9,9 +9,9 @@ CI_PROJECT_NAME=${GITHUB_REPOSITORY:-"QPod/media-lab"}
 CI_PROJECT_BRANCH=${GITHUB_HEAD_REF:-"main"}
 
 if [ "${CI_PROJECT_BRANCH}" = "main" ] ; then
-    export CI_PROJECT_NAMESPACE=$(echo "$(dirname ${CI_PROJECT_NAME})") ;
+    export CI_PROJECT_NAMESPACE="$(dirname ${CI_PROJECT_NAME})" ;
 else
-    export CI_PROJECT_NAMESPACE=$(echo "$(dirname ${CI_PROJECT_NAME})")0${CI_PROJECT_BRANCH} ;
+    export CI_PROJECT_NAMESPACE="$(dirname ${CI_PROJECT_NAME})0${CI_PROJECT_BRANCH}" ;
 fi
 
 export NAMESPACE=$(echo "${REGISTRY_URL:-"docker.io"}/${CI_PROJECT_NAMESPACE}" | awk '{print tolower($0)}')
@@ -22,36 +22,37 @@ jq '.experimental=true'  /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /
 sudo service docker restart
 
 build_image() {
-    echo $@ ;
-    IMG=$1; TAG=$2; FILE=$3; shift 3; VER=`date +%Y.%m%d`;
+    echo "$@" ;
+    IMG=$1; TAG=$2; FILE=$3; shift 3; VER=$(date +%Y.%m%d);
     docker build --squash --compress --force-rm=true -t "${NAMESPACE}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${NAMESPACE}" "$@" "$(dirname $FILE)" ;
     docker tag "${NAMESPACE}/${IMG}:${TAG}" "${NAMESPACE}/${IMG}:${VER}" ;
 }
 
 build_image_no_tag() {
-    echo $@ ;
+    echo "$@" ;
     IMG=$1; TAG=$2; FILE=$3; shift 3; 
     docker build --squash --compress --force-rm=true -t "${NAMESPACE}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${NAMESPACE}" "$@" "$(dirname $FILE)" ;
 }
 
 build_image_common() {
-    echo $@ ;
-    IMG=$1; TAG=$2; FILE=$3; shift 3; VER=`date +%Y.%m%d`;
+    echo "$@" ;
+    IMG=$1; TAG=$2; FILE=$3; shift 3; VER=$(date +%Y.%m%d);
     docker build --compress --force-rm=true -t "${NAMESPACE}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${NAMESPACE}" "$@" "$(dirname $FILE)" ;
     docker tag "${NAMESPACE}/${IMG}:${TAG}" "${NAMESPACE}/${IMG}:${VER}" ;
 }
 
 alias_image() {
-    IMG_1=$1; TAG_1=$2; IMG_2=$3; TAG_2=$4; shift 4; VER=`date +%Y.%m%d`;
+    IMG_1=$1; TAG_1=$2; IMG_2=$3; TAG_2=$4; shift 4; VER=$(date +%Y.%m%d);
     docker tag "${NAMESPACE}/${IMG_1}:${TAG_1}" "${NAMESPACE}/${IMG_2}:${TAG_2}" ;
     docker tag "${NAMESPACE}/${IMG_2}:${TAG_2}" "${NAMESPACE}/${IMG_2}:${VER}" ;
 }
 
 push_image() {
+    IMG=$1; KEYWORD=${IMG:-"second"};
     docker image prune --force && docker images ;
-    IMGS=$(docker images | grep "second" | awk '{print $1 ":" $2}') ;
+    IMGS=$(docker images | grep "${KEYWORD}" | awk '{print $1 ":" $2}') ;
     echo "$DOCKER_REGISTRY_PASSWORD" | docker login "${REGISTRY_URL}" -u "$DOCKER_REGISTRY_USER" --password-stdin ;
-    for IMG in $(echo $IMGS | tr " " "\n") ;
+    for IMG in $(echo "${IMGS}" | tr " " "\n") ;
     do
       docker push "${IMG}";
       status=$?;
