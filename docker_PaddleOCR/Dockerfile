@@ -15,14 +15,12 @@ RUN source /opt/utils/script-setup.sh \
  && CUDA_VER=$(echo "${CUDA_VERSION:0:4}" | sed 's/\.//' ) \
  && V=$($(grep -q "11" <<< "${CUDA_VER}") && echo ".post${CUDA_VER}" || echo "" ) \
  && V=$(echo ${PADDLE}==${PADDLE_VER}${V}) && echo "to install paddle: ${V}" \
- && pip install pip==21.3.1 && pip --version \
  && pip install ${V} -f "https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html" \
- && pip install -U pip\
- # Step 2. install required libs
+ # Step 2. install required OS libs for PaddleOCR, mainly for images processing
  && apt-get -qq update -yq --fix-missing && apt-get -qq install -yq --no-install-recommends libgl1 libglib2.0-0 \
- # Step 3. install PaddleOCR deps independently
- && pip install -U opencv-python opencv-contrib-python scikit-image imgaug shapely pyclipper attrdict3 lxml lmdb \
- # Step 4. install PaddleOCR without deps
- && pip install -U --no-deps paddleocr \
+ # Step 3. install PaddleOCR
+ && pip install -U --no-cache-dir paddleocr \
+ # Step 4. install PaddleOCR fixes for Python>=3.10 compatibility
+ && pip uninstall -y attrdict && pip install -UI --no-cache-dir attrdict3 \
  # Step 5. cleanup
  && install__clean && list_installed_packages
