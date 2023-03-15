@@ -17,5 +17,7 @@ Please generously STAR★ our project or donate to us!  [![GitHub Starts](https:
 ## Building blocks for multimedia media projects
 
 Building blocks for the following multimedia project use cases are supported in this project:
-- OCR
+- Image/Video and Audio feature extraction
 - Face Landmark Detection
+- OCR and Document Intelligence
+- NLP models based on HuggingFace transformers
