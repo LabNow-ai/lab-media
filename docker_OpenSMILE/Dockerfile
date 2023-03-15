@@ -1,28 +1,12 @@
 # Distributed under the terms of the Modified BSD License.
 
 ARG BASE_NAMESPACE
-ARG BASE_IMG="qpod/base"
+ARG BASE_IMG="qpod/opencv"
 FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 
 LABEL maintainer="haobibo@gmail.com"
 
-COPY work /opt/utils/
-
 RUN cd /tmp      && source /opt/utils/script-utils.sh \
- && install_apt /opt/utils/install_list_openSMILE.apt \
- ## Download and build OpenCV
- && install_tar_gz https://github.com/opencv/opencv/archive/4.1.0.tar.gz \
- && mv /opt/opencv-* /tmp/opencv \
- && cd /tmp/opencv && mkdir -p build && cd build \
- && cmake \
-     -D CMAKE_BUILD_TYPE=RELEASE \
-     -D CMAKE_INSTALL_PREFIX=/usr/local \
-     -D WITH_TBB=ON \
-     -D WITH_EIGEN=ON \
-     -D WITH_CUDA=OFF \
-     -D PYTHON_DEFAULT_EXECUTABLE=`which python` \
-     -D BUILD_SHARED_LIBS=ON  .. \
- && make -j8 && make install \
  ## Download and build OpenSMILE
  && install_zip https://github.com/audeering/opensmile/archive/refs/heads/master.zip \
  && mv /opt/opensmile-* /tmp/openSMILE \
