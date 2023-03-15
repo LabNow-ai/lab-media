@@ -24,13 +24,13 @@ RUN cd /tmp      && source /opt/utils/script-utils.sh \
      -D BUILD_SHARED_LIBS=ON  .. \
  && make -j8 && make install \
  ## Download and build OpenSMILE
- && install_tar_gz http://www.audeering.com/download/opensmile-2-3-0-tar-gz/?wpdmdl=4782 \
+ && install_zip https://github.com/audeering/opensmile/archive/refs/heads/master.zip \
  && mv /opt/opensmile-* /tmp/openSMILE \
  && cd /tmp/openSMILE \
- && sed -i '117s/(char)/(unsigned char)/g' src/include/core/vectorTransform.hpp \
- && ./buildWithPortAudio.sh -p /opt/openSMILE \
- && ./buildStandalone.sh -p /opt/openSMILE \
- && mv config scripts /opt/openSMILE \
+ # && sed -i '117s/(char)/(unsigned char)/g' src/include/core/vectorTransform.hpp \
+ # && ./buildWithPortAudio.sh -p /opt/openSMILE && ./buildStandalone.sh -p /opt/openSMILE \
+ && ./build.sh \
+ && mv build/* config scripts /opt/openSMILE \
  ## Clean Up
  && cd /opt/openSMILE && install__clean
 
