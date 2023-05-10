@@ -1,5 +1,8 @@
 # Store and Download Huggingface Models via docker images
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/qpod/huggingface-models.svg)](https://hub.docker.com/r/qpod/huggingface-models)
+[![Docker Starts](https://img.shields.io/docker/stars/qpod/huggingface-models.svg)](https://hub.docker.com/r/qpod/huggingface-models)
+
 These docker images help you to store and download Huggingface Models via docker images.
 
 This is especially useful when you are:
