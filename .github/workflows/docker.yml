@@ -72,7 +72,7 @@ jobs:
 
   # To build HF model image for a single model, simple run: `build_image_hf_model bert-base-cased`
   qpod_HuggingFaceModels:
-    name: qpod/huggingface-models
+    name: qpod/huggingface-model
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -81,10 +81,10 @@ jobs:
           build_image_hf_model() {
             HF_MODEL_NAME=$1; HF_MODEL_TAG=$(echo $1 | sed 's/\//./g');
             echo "HF model to pull and build image: ${HF_MODEL_NAME}..."
-            build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-models/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}" ;
+            build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-model/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}" ;
             push_image ;
           }
           export -f build_image_hf_model build_image_no_tag push_image
           LIST_MODELS=("LTP/tiny")
-          # cat docker_HuggingFace-models/list_hf_models.txt | read -rd '' -a LIST_MODELS_BAK
+          # cat docker_HuggingFace-model/list_hf_models.txt | read -rd '' -a LIST_MODELS_BAK
           echo ${LIST_MODELS[@]}  | xargs -n1 -I {} bash -c 'build_image_hf_model "$@"' _ {} ;

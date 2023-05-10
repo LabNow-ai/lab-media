@@ -41,7 +41,7 @@ docker run --rm -it -v $(pwd):/tmp "qpod/huggingface-model:${MODEL_NAME}"
 
 ## Build your own docker image which stores a customized HF model
 
-refer to: https://github.com/QPod/media-lab/tree/main/docker_HuggingFace-models
+refer to: https://github.com/QPod/media-lab/tree/main/docker_HuggingFace-model
 
 ```bash
 source tool.sh
