@@ -4,8 +4,9 @@ t5-small            t5-base                 t5-large
 gpt2                gpt2-medium             gpt2-large              distilgpt2
 roberta-base        roberta-large           xlnet-base-cased        xlnet-large-cased
 LTP/tiny            LTP/smallLTP/base       LTP/base1               LTP/base2
-fnlp/cpt-base       fnlp/cpt-large          fnlp/bart-base-chinese  fnlp/bart-large-chinese    fnlp/elasticbert-base    fnlp/elasticbert-large
-hfl/chinese-bert-wwm-ext                    hfl/chinese-bert-wwm
-hfl/chinese-roberta-wwm-ext                 hfl/chinese-roberta-wwm-ext-large
-hfl/chinese-xlnet-base                      hfl/chinese-xlnet-mid
 microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract                microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext
+microsoft/biogpt    microsoft/BioGPT-Large  microsoft/BioGPT-Large-PubMedQA
+microsoft/layoutlmv3-base   microsoft/layoutlmv3-large  microsoft/layoutlmv3-base-chinese
+facebook/sam-vit-base       facebook/sam-vit-large      facebook/sam-vit-huge
+THUDM/chatglm-6b-int4       THUDM/chatglm-6b-int8       THUDM/chatglm-6b        THUDM/glm-2b        THUDM/glm-10b
+THUDM/glm-10b-chinese       THUDM/glm-large-chinese
