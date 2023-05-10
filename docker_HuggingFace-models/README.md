@@ -51,3 +51,16 @@ build_image_hf_model() {
 export -f build_image_hf_model build_image_no_tag push_image
 build_image_hf_model microsoft/biogpt
 ```
+
+# Dev Notes
+
+To quickly create a docker image for a HF model, you can use GitHub codespace to run the command above.
+
+The following configuration for `/etc/docker/daemon.json` might be useful. Restart the codespace to let the configuration to take effect.
+
+```json
+{
+  "experimental": true,
+  "graph": "/workspaces/docker"
+}
+```
