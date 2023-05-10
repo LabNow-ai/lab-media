@@ -16,4 +16,4 @@ ARG HF_MODEL_NAME
 LABEL HF_MODEL_NAME="${HF_MODEL_NAME}"
 LABEL maintainer="haobibo@gmail.com"
 LABEL usage="docker run --rm -it -v $(pwd):/tmp `docker-image-name`"
-CMD ["sh", "-c", "ls -alh /home && cp -r /home/* /tmp/"]
+CMD ["sh", "-c", "ls -alh /home && cp -rf /home/* /tmp/"]

@@ -41,7 +41,7 @@ docker run --rm -it -v $(pwd):/tmp "qpod/huggingface-model:${MODEL_NAME}"
 refer to: https://github.com/QPod/media-lab/tree/main/docker_HuggingFace-models
 
 ```bash
-bash tool.sh
+source tool.sh
 build_image_hf_model() {
     HF_MODEL_NAME=$1; HF_MODEL_TAG=$(echo $1 | sed 's/\//./g');
     echo "HF model to pull and build image: ${HF_MODEL_NAME}..."
@@ -49,6 +49,5 @@ build_image_hf_model() {
     push_image ;
 }
 export -f build_image_hf_model build_image_no_tag push_image
-LIST_MODELS=("microsoft/biogpt")
-echo ${LIST_MODELS[@]}  | xargs -n1 -I {} bash -c 'build_image_hf_model "$@"' _ {} ;
+build_image_hf_model microsoft/biogpt
 ```
