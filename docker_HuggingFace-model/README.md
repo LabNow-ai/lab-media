@@ -48,7 +48,7 @@ source tool.sh
 build_image_hf_model() {
     HF_MODEL_NAME=$1; HF_MODEL_TAG=$(echo $1 | sed 's/\//./g');
     echo "HF model to pull and build image: ${HF_MODEL_NAME}..."
-    build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-models/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}" ;
+    build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-model/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}" ;
     push_image ;
 }
 export -f build_image_hf_model build_image_no_tag push_image
