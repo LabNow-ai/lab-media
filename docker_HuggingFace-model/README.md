@@ -17,7 +17,7 @@ You can download the model files simply using `docker pull qpod/huggingface-mode
 The models files are stored at the `/home` directory in the docker images by default.
 
 Note that the slashes in HF model name should be replaced by dots.
-For example, given a HuggingFace model `HF_MODEL_NAME='microsoft/biogpt'`, change the slashes in the name to dots by using: `HF_MODEL_TAG=$(echo ${HF_MODEL_NAME} | sed 's/\//./g')`, which generates `HF_MODEL_TAG=microsoft.biogpt`.
+For example, given a HuggingFace model `HF_MODEL_NAME='microsoft/biogpt'`, change the slashes in the name to dots by using: `HF_MODEL_TAG=$(echo ${HF_MODEL_NAME} | sed 's/\//./g' | tr '[:upper:]' '[:lower:]')` and then change all the letters into lowercase, which generates `HF_MODEL_TAG=microsoft.biogpt`.
 
 We have alrady pre-built several popular models, you can find a list of models here:
 https://hub.docker.com/r/qpod/huggingface-model/tags
@@ -46,7 +46,7 @@ refer to: https://github.com/QPod/media-lab/tree/main/docker_HuggingFace-model
 ```bash
 source tool.sh
 build_image_hf_model() {
-    HF_MODEL_NAME=$1; HF_MODEL_TAG=$(echo $1 | sed 's/\//./g');
+    HF_MODEL_NAME=$1; HF_MODEL_TAG=$(echo ${HF_MODEL_NAME} | sed 's/\//./g' | tr '[:upper:]' '[:lower:]');
     echo "HF model to pull and build image: ${HF_MODEL_NAME}..."
     build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-model/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}" ;
     push_image ;
