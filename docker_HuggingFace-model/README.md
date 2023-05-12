@@ -49,15 +49,21 @@ docker run --rm -it -v $(pwd):/tmp "qpod/huggingface-model:${MODEL_NAME}"
 refer to: https://github.com/QPod/media-lab/tree/main/docker_HuggingFace-model
 
 ```bash
-source tool.sh
-build_image_hf_model() {
-    HF_MODEL_NAME=$1; HF_MODEL_TAG=$(echo ${HF_MODEL_NAME} | sed 's/\//./g' | tr '[:upper:]' '[:lower:]');
-    echo "HF model to pull and build image: ${HF_MODEL_NAME}..."
-    build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-model/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}" ;
-    push_image ;
+download_hf_model() {
+    HF_MODEL_NAME=$1 && DIR_CAHCE=$(pwd)/docker_HuggingFace \
+ && GIT_REPO_URL="https://huggingface.co/${HF_MODEL_NAME}" && GIT_REPO_HEAD=$(git ls-remote $GIT_REPO_URL | grep HEAD | cut -f1) \
+ && echo $GIT_REPO_URL $GIT_REPO_HEAD \
+ && git clone --progress --verbose --depth 1 $GIT_REPO_URL ${DIR_CAHCE}/${HF_MODEL_NAME} \
+ && rm -rf ${DIR_CAHCE}/${HF_MODEL_NAME}/.git && tree ${DIR_CAHCE}/${HF_MODEL_NAME} && du -h -d1 ${DIR_CAHCE}/${HF_MODEL_NAME}
 }
-export -f build_image_hf_model build_image_no_tag push_image
-build_image_hf_model microsoft/biogpt
+build_image_hf_model() {
+    HF_MODEL_NAME=$1 && HF_MODEL_TAG=$(echo ${HF_MODEL_NAME} | sed 's/\//./g' | tr '[:upper:]' '[:lower:]') \
+ && build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-model/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}" \
+ && push_image
+}
+source tool.sh
+export -f download_hf_model build_image_hf_model build_image_no_tag push_image
+HF_MODEL_NAME='microsoft/biogpt' && download_hf_model ${HF_MODEL_NAME} && build_image_hf_model ${HF_MODEL_NAME}
 ```
 
 # Dev Notes
@@ -68,4 +74,10 @@ The following configuration for `/etc/docker/daemon.json` might be useful. Resta
 
 ```json
 {"experimental": true, "data-root": "/workspaces/docker"}
+```
+
+```bash
+LIST_MODELS=("LTP/tiny")
+cat docker_HuggingFace-model/list_hf_models.txt | read -rd '' -a LIST_MODELS_BAK
+echo ${LIST_MODELS[@]}  | xargs -n1 -I {} bash -c 'build_image_hf_model "$@"' _ {} ;
 ```
