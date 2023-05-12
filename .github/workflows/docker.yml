@@ -77,14 +77,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          source ./tool.sh
-          build_image_hf_model() {
-            HF_MODEL_NAME=$1; HF_MODEL_TAG=$(echo ${HF_MODEL_NAME} | sed 's/\//./g' | tr '[:upper:]' '[:lower:]');
-            echo "HF model to pull and build image: ${HF_MODEL_NAME}..."
-            build_image_no_tag huggingface-model ${HF_MODEL_TAG} docker_HuggingFace-model/Dockerfile --build-arg "HF_MODEL_NAME=${HF_MODEL_NAME}" ;
-            push_image ;
-          }
-          export -f build_image_hf_model build_image_no_tag push_image
-          LIST_MODELS=("LTP/tiny")
-          # cat docker_HuggingFace-model/list_hf_models.txt | read -rd '' -a LIST_MODELS_BAK
-          echo ${LIST_MODELS[@]}  | xargs -n1 -I {} bash -c 'build_image_hf_model "$@"' _ {} ;
+          source tool.sh && source docker_HuggingFace-model/script-setup-huggingface.sh
+          export -f download_hf_model build_image_hf_model build_image_no_tag push_image
+          HF_MODEL_NAME=$(sort --random-sort docker_HuggingFace-model/list_hf_models.txt | head -n1)
+          download_hf_model ${HF_MODEL_NAME} && build_image_hf_model ${HF_MODEL_NAME}
