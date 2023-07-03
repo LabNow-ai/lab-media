@@ -1,9 +1,5 @@
 #!/bin/bash
-# set -xu
-
-export REGISTRY_URL="docker.io"   # docker.io or other registry URL, DOCKER_REGISTRY_USER/DOCKER_REGISTRY_PASSWORD to be set in CI env.
-export BUILDKIT_PROGRESS="plain"  # Full logs for CI build.
-# DOCKER_REGISTRY_USER and DOCKER_REGISTRY_PASSWORD is required for docker image push, they should be set in CI secrets.
+set -xu
 
 CI_PROJECT_NAME=${GITHUB_REPOSITORY:-"QPod/media-lab"}
 CI_PROJECT_BRANCH=${GITHUB_HEAD_REF:-"main"}
@@ -18,15 +14,17 @@ else
 fi
 
 export NAMESPACE=$(echo "${REGISTRY_URL:-"docker.io"}/${CI_PROJECT_NAMESPACE}" | awk '{print tolower($0)}')
+
 echo "--------> CI_PROJECT_NAMESPACE=${CI_PROJECT_NAMESPACE}"
-echo "--------> Docker Repo=${NAMESPACE}"
+echo "--------> DOCKER_REGISTRY_NAMESPACE=${NAMESPACE}"
 
 if [ -f /etc/docker/daemon.json ]; then
-       jq '.experimental=true' /etc/docker/daemon.json > /tmp/daemon.json \
-    && sudo mv /tmp/daemon.json /etc/docker/ \
+       jq '.experimental=true' /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/ \
     && ( sudo service docker restart || true )
+else
+    docker info
 fi
-docker info
+
 
 build_image() {
     echo "$@" ;
@@ -65,6 +63,17 @@ push_image() {
       status=$?;
       echo "[${status}] Image pushed > ${IMG}";
     done
+}
+
+clear_images() {
+    KEYWORD=${1:-'days ago\|weeks ago\|months ago\|years ago'}; # if no keyword is provided, clear all images build days ago
+    IMGS_1=$(docker images | grep "${KEYWORD}" | awk '{print $1 ":" $2}') ;
+    IMGS_2=$(docker images | grep "${KEYWORD}" | awk '{print $3}') ;
+
+    for IMG in $(echo "$IMGS_1 $IMGS_2" | tr " " "\n") ; do
+      docker rmi "${IMG}" || true; status=$?; echo "[${status}] image removed > ${IMG}";
+    done
+    docker image prune --force && docker images ;
 }
 
 remove_folder() {

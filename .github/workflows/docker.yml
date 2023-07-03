@@ -40,10 +40,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          source ./tool.sh
+          source ./tool.sh && free_diskspace
           build_image paddleocr-cuda112 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_11.2"         && push_image
+          build_image paddleocr-models  latest	docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda102" && push_image && clear_images paddleocr
           build_image doc-ai-cuda112    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda112"    && push_image
-          build_image paddleocr-models  latest	docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda102" && push_image
 
   qpod_PaddleOCR_cuda117:
     name: qpod/paddleocr_cuda117
