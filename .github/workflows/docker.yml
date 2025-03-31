@@ -17,8 +17,8 @@ concurrency:
   
 env:
   BUILDKIT_PROGRESS: "plain"  # Full logs for CI build.
-  REGISTRY_URL: "quay.io"  # docker.io or other target registry URL: where to push images to.
-  REGISTRY_SRC: "docker.io"  # For BASE_NAMESPACE of images: where to pull base images from.
+  REGISTRY_SRC: "docker.io"  # For BASE_NAMESPACE of images: where to pull base images from, docker.io or other source registry URL.
+  REGISTRY_DST: "quay.io"  # For tags of built images: where to push images to, docker.io or other destination registry URL.
   # DOCKER_REGISTRY_USERNAME and DOCKER_REGISTRY_PASSWORD is required for docker image push, they should be set in CI secrets.
   DOCKER_REGISTRY_USERNAME: ${{ vars.DOCKER_REGISTRY_USERNAME }}
   DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
@@ -32,7 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: source ./tool.sh && build_image nvidia-ctk latest		docker_nvidia-ctk/Dockerfile		&& push_image
+      - run: |
+          source ./tool.sh && export IMG_PREFIX_SRC="docker.io/library"
+          build_image nvidia-ctk latest		docker_nvidia-ctk/Dockerfile		&& push_image
 
   qpod_OpenCV:
     name: qpod/opencv
