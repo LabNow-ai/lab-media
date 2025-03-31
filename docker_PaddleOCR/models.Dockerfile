@@ -6,9 +6,9 @@ FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG} AS builder
 RUN python /opt/utils/download_paddleocr_models.py \
  && mv ~/.paddleocr /opt/ && tree /opt/.paddleocr
 
-ARG BASE_NAMESPACE
+ARG BASE_NAMESPACE_SRC
 ARG BASE_IMG="busybox"
-FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
+FROM ${BASE_NAMESPACE_SRC:+$BASE_NAMESPACE_SRC/}${BASE_IMG}
 COPY --from=builder /opt/.paddleocr /home/
 LABEL MODEL_NAME="paddleocr"
 LABEL maintainer="haobibo@gmail.com"
