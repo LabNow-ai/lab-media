@@ -1,40 +1,46 @@
-name: qpod-media-lab
+name: build-docker-images-gpus
 
 on:
   push:
-    branches: [ main ]
-    paths-ignore:
-      - "*.md"
+    branches: [ "main" ]
+    paths-ignore: [ "*.md" ]
 
   pull_request:
-    branches: [ main ]
-    paths-ignore:
-      - "*.md"
+    branches: [ "main" ]
+    paths-ignore: [ "*.md" ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  workflow_dispatch:  # Allows you to run this workflow manually from the Actions tab
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+  
 env:
-  # DOCKER_REGISTRY_USER and DOCKER_REGISTRY_PASSWORD is required for docker image push, they should be set in CI secrets.
-  DOCKER_REGISTRY_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
-  DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-  REGISTRY_URL: "docker.io"   # docker.io or other registry URL, DOCKER_REGISTRY_USER/DOCKER_REGISTRY_PASSWORD to be set in CI env.
   BUILDKIT_PROGRESS: "plain"  # Full logs for CI build.
-
+  REGISTRY_SRC: "docker.io"  # For BASE_NAMESPACE of images: where to pull base images from, docker.io or other source registry URL.
+  REGISTRY_DST: "quay.io"  # For tags of built images: where to push images to, docker.io or other destination registry URL.
+  # DOCKER_REGISTRY_USERNAME and DOCKER_REGISTRY_PASSWORD is required for docker image push, they should be set in CI secrets.
+  DOCKER_REGISTRY_USERNAME: ${{ vars.DOCKER_REGISTRY_USERNAME }}
+  DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+  # used to sync image to mirror registry
+  DOCKER_MIRROR_REGISTRY_USERNAME: ${{ vars.DOCKER_MIRROR_REGISTRY_USERNAME }}
+  DOCKER_MIRROR_REGISTRY_PASSWORD: ${{ secrets.DOCKER_MIRROR_REGISTRY_PASSWORD }}
 
 jobs:
-  qpod_nvidia-docker2:
-    name: qpod/nvidia-docker2
+  qpod_nvidia-ctk:
+    name: qpod/nvidia-ctk
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: source ./tool.sh && build_image nvidia-docker2 latest		docker_nvidia-docker2/Dockerfile		&& push_image
+      - uses: actions/checkout@v4
+      - run: |
+          source ./tool.sh && export IMG_PREFIX_SRC="docker.io/library"
+          build_image nvidia-ctk latest		docker_nvidia-ctk/Dockerfile		&& push_image
 
   qpod_OpenCV:
     name: qpod/opencv
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: source ./tool.sh && build_image opencv latest				docker_OpenCV/Dockerfile				&& push_image
 
 
@@ -42,37 +48,41 @@ jobs:
     name: qpod/paddleocr_cuda112
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           source ./tool.sh && free_diskspace
-          build_image paddleocr-cuda112 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_11.2"         && push_image
-          build_image paddleocr-models  latest	docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda102" && push_image && clear_images paddleocr
+          build_image paddleocr-cuda112 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_11.2"
+          build_image paddleocr-models  latest	docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda112" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"
+          push_image && clear_images paddleocr
           build_image doc-ai-cuda112    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda112"    && push_image
 
-  qpod_PaddleOCR_cuda117:
-    name: qpod/paddleocr_cuda117
+  qpod_PaddleOCR_cuda120:
+    name: qpod/paddleocr_cuda120
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           source ./tool.sh
-          build_image paddleocr-cuda117 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_11.7"         && push_image
-          build_image doc-ai-cuda117    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda117"    && push_image
+          build_image paddleocr-cuda120 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_12.0"         && push_image
+          # TODO: change to py-nlp-cuda120
+          build_image doc-ai-cuda120    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_12.0"         && push_image
 
 
   qpod_OpenFace-src:
     name: qpod/openface-src
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: source ./tool.sh && build_image openface-src latest		docker_OpenFace/src.Dockerfile	&& push_image
+      - uses: actions/checkout@v4
+      - run: |
+          source ./tool.sh && export IMG_PREFIX_SRC="docker.io/library"
+          build_image openface-src latest		docker_OpenFace/src.Dockerfile	&& push_image
 
   qpod_OpenFace:
     name: qpod/openface
     needs: [ "qpod_OpenCV", "qpod_OpenFace-src" ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: source ./tool.sh && build_image openface latest			docker_OpenFace/Dockerfile				&& push_image
 
   # To build HF model image for a single model, simple run: `build_image_hf_model bert-base-cased`
@@ -80,9 +90,10 @@ jobs:
     name: qpod/huggingface-model
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
-          source tool.sh && source docker_HuggingFace-model/script-setup-huggingface.sh
+          source tool.sh && export IMG_PREFIX_SRC="docker.io/library"
+          source docker_HuggingFace-model/script-setup-huggingface.sh
           export -f download_hf_model build_image_hf_model build_image_no_tag push_image
           HF_MODEL_NAME=$(sort --random-sort docker_HuggingFace-model/list_hf_models.txt | head -n1)
           download_hf_model ${HF_MODEL_NAME} && build_image_hf_model ${HF_MODEL_NAME}

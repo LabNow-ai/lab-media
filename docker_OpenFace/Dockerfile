@@ -8,7 +8,7 @@ LABEL maintainer="haobibo@gmail.com"
 
 COPY work /opt/utils/
 
-RUN cd /tmp && source /opt/utils/script-utils.sh \
+RUN set -eux && source /opt/utils/script-utils.sh \
  && install_apt       /opt/utils/install_list_OpenFace.apt \
  && ln /dev/null /dev/raw1394 \
  ## Download and build dlib
@@ -32,10 +32,10 @@ RUN cd /tmp && source /opt/utils/script-utils.sh \
  && mv /tmp/OpenFace/build/bin /opt/OpenFace \
  && cd /opt/OpenFace/model/patch_experts \
  # model download URLs: https://github.com/TadasBaltrusaitis/OpenFace/wiki/Model-download#manual-download
- && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153072&authkey=AKqoZtcN0PSIZH4' -O cen_patches_0.25_of.dat \
- && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153079&authkey=ANpDR1n3ckL_0gs' -O cen_patches_0.35_of.dat \
- && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153074&authkey=AGi-e30AfRc_zvs' -O cen_patches_0.50_of.dat \
- && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153070&authkey=AD6KjtYipphwBPc' -O cen_patches_1.00_of.dat \
+ # && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153072&authkey=AKqoZtcN0PSIZH4' -O cen_patches_0.25_of.dat \
+ # && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153079&authkey=ANpDR1n3ckL_0gs' -O cen_patches_0.35_of.dat \
+ # && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153074&authkey=AGi-e30AfRc_zvs' -O cen_patches_0.50_of.dat \
+ # && wget -nv 'https://onedrive.live.com/download?cid=2E2ADA578BFF6E6E&resid=2E2ADA578BFF6E6E%2153070&authkey=AD6KjtYipphwBPc' -O cen_patches_1.00_of.dat \
  ## Clean Up
  && install__clean
 

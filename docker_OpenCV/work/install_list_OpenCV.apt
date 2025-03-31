@@ -1,10 +1,11 @@
 % This file contains apt packages to be installed with apt-get install line by line.
 % Use percent char as line comment separator.
 
+% libtbb2 libtbb-dev libdc1394-22-dev
+
 %% Packages required to build OpenFace:
 libc++-dev libc++abi-dev llvm clang libboost-all-dev
-libopenblas-dev liblapack-dev libtbb2 libtbb-dev
-libgtk2.0-dev libdc1394-22-dev
+libopenblas-dev liblapack-dev
 ffmpeg libavcodec-dev libavformat-dev libswscale-dev
-libjpeg-dev libpng-dev libtiff-dev
+libgtk2.0-dev libjpeg-dev libpng-dev libtiff-dev
 pkg-config checkinstall

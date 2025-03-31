@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xu
 
-CI_PROJECT_NAME=${GITHUB_REPOSITORY:-"QPod/media-lab"}
+CI_PROJECT_NAME=${GITHUB_REPOSITORY:-"QPod/lab-media"}
 CI_PROJECT_BRANCH=${GITHUB_HEAD_REF:-"main"}
 CI_PROJECT_SPACE=$(echo "${CI_PROJECT_BRANCH}" | cut -f1 -d'/')
 
@@ -13,50 +13,52 @@ else
     export CI_PROJECT_NAMESPACE="$(dirname ${CI_PROJECT_NAME})0${CI_PROJECT_SPACE}" ;
 fi
 
-export NAMESPACE=$(echo "${REGISTRY_URL:-"docker.io"}/${CI_PROJECT_NAMESPACE}" | awk '{print tolower($0)}')
+export IMG_NAMESPACE=$(echo "${CI_PROJECT_NAMESPACE}" | awk '{print tolower($0)}')
+export IMG_PREFIX_SRC=$(echo "${REGISTRY_SRC:-"docker.io"}/${IMG_NAMESPACE}" | awk '{print tolower($0)}')
+export IMG_PREFIX_DST=$(echo "${REGISTRY_DST:-"docker.io"}/${IMG_NAMESPACE}" | awk '{print tolower($0)}')
+export TAG_SUFFIX="-$(git rev-parse --short HEAD)"
 
 echo "--------> CI_PROJECT_NAMESPACE=${CI_PROJECT_NAMESPACE}"
-echo "--------> DOCKER_REGISTRY_NAMESPACE=${NAMESPACE}"
+echo "--------> DOCKER_IMG_NAMESPACE=${IMG_NAMESPACE}"
+echo "--------> DOCKER_IMG_PREFIX_SRC=${IMG_PREFIX_SRC}"
+echo "--------> DOCKER_IMG_PREFIX_DST=${IMG_PREFIX_DST}"
+echo "--------> DOCKER_TAG_SUFFIX=${TAG_SUFFIX}"
 
-if [ -f /etc/docker/daemon.json ]; then
-       jq '.experimental=true' /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/ \
-    && ( sudo service docker restart || true )
-else
-    docker info
-fi
-
+[ ! -f /etc/docker/daemon.json ] && sudo tee /etc/docker/daemon.json > /dev/null <<< '{}'
+jq '.experimental=true | ."data-root"="/mnt/docker"' /etc/docker/daemon.json > /tmp/daemon.json && sudo mv /tmp/daemon.json /etc/docker/
+( sudo service docker restart || true ) && cat /etc/docker/daemon.json && docker info
 
 build_image() {
     echo "$@" ;
-    IMG=$1; TAG=$2; FILE=$3; shift 3; VER=$(date +%Y.%m%d.%H%M); WORKDIR="$(dirname $FILE)";
-    docker build --compress --force-rm=true -t "${NAMESPACE}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${NAMESPACE}" "$@" "${WORKDIR}" ;
-    docker tag "${NAMESPACE}/${IMG}:${TAG}" "${NAMESPACE}/${IMG}:${VER}" ;
+    IMG=$1; TAG=$2; FILE=$3; shift 3; VER=$(date +%Y.%m%d.%H%M)${TAG_SUFFIX}; WORKDIR="$(dirname $FILE)";
+    docker build --compress --force-rm=true -t "${IMG_PREFIX_DST}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${IMG_PREFIX_SRC}" "$@" "${WORKDIR}" ;
+    docker tag "${IMG_PREFIX_DST}/${IMG}:${TAG}" "${IMG_PREFIX_DST}/${IMG}:${VER}" ;
 }
 
 build_image_no_tag() {
     echo "$@" ;
     IMG=$1; TAG=$2; FILE=$3; shift 3; WORKDIR="$(dirname $FILE)";
-    docker build --compress --force-rm=true -t "${NAMESPACE}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${NAMESPACE}" "$@" "${WORKDIR}" ;
+    docker build --compress --force-rm=true -t "${IMG_PREFIX_DST}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${IMG_PREFIX_SRC}" "$@" "${WORKDIR}" ;
 }
 
 build_image_common() {
     echo "$@" ;
-    IMG=$1; TAG=$2; FILE=$3; shift 3; VER=$(date +%Y.%m%d.%H%M); WORKDIR="$(dirname $FILE)";
-    docker build --compress --force-rm=true -t "${NAMESPACE}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${NAMESPACE}" "$@" "${WORKDIR}" ;
-    docker tag "${NAMESPACE}/${IMG}:${TAG}" "${NAMESPACE}/${IMG}:${VER}" ;
+    IMG=$1; TAG=$2; FILE=$3; shift 3; VER=$(date +%Y.%m%d.%H%M)${TAG_SUFFIX}; WORKDIR="$(dirname $FILE)";
+    docker build --compress --force-rm=true -t "${IMG_PREFIX_DST}/${IMG}:${TAG}" -f "$FILE" --build-arg "BASE_NAMESPACE=${IMG_PREFIX_SRC}" "$@" "${WORKDIR}" ;
+    docker tag "${IMG_PREFIX_DST}/${IMG}:${TAG}" "${IMG_PREFIX_DST}/${IMG}:${VER}" ;
 }
 
 alias_image() {
-    IMG_1=$1; TAG_1=$2; IMG_2=$3; TAG_2=$4; shift 4; VER=$(date +%Y.%m%d.%H%M);
-    docker tag "${NAMESPACE}/${IMG_1}:${TAG_1}" "${NAMESPACE}/${IMG_2}:${TAG_2}" ;
-    docker tag "${NAMESPACE}/${IMG_2}:${TAG_2}" "${NAMESPACE}/${IMG_2}:${VER}" ;
+    IMG_1=$1; TAG_1=$2; IMG_2=$3; TAG_2=$4; shift 4; VER=$(date +%Y.%m%d.%H%M)${TAG_SUFFIX};
+    docker tag "${IMG_PREFIX_DST}/${IMG_1}:${TAG_1}" "${IMG_PREFIX_DST}/${IMG_2}:${TAG_2}" ;
+    docker tag "${IMG_PREFIX_DST}/${IMG_2}:${TAG_2}" "${IMG_PREFIX_DST}/${IMG_2}:${VER}" ;
 }
 
 push_image() {
     KEYWORD="${1:-second}";
     docker image prune --force && docker images | sort;
     IMAGES=$(docker images | grep "${KEYWORD}" | awk '{print $1 ":" $2}') ;
-    echo "$DOCKER_REGISTRY_PASSWORD" | docker login "${REGISTRY_URL}" -u "$DOCKER_REGISTRY_USER" --password-stdin ;
+    echo "$DOCKER_REGISTRY_PASSWORD" | docker login "${REGISTRY_DST}" -u "$DOCKER_REGISTRY_USERNAME" --password-stdin ;
     for IMG in $(echo "${IMAGES}" | tr " " "\n") ;
     do
       docker push "${IMG}";
@@ -75,6 +77,7 @@ clear_images() {
     done
     docker image prune --force && docker images ;
 }
+
 
 remove_folder() {
     sudo du -h -d1 "$1" || true ;

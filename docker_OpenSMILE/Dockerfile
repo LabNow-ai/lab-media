@@ -6,7 +6,7 @@ FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 
 LABEL maintainer="haobibo@gmail.com"
 
-RUN cd /tmp      && source /opt/utils/script-utils.sh \
+RUN set -eux && source /opt/utils/script-utils.sh \
  ## Download and build OpenSMILE
  && install_zip https://github.com/audeering/opensmile/archive/refs/heads/master.zip \
  && mv /opt/opensmile-* /tmp/openSMILE \
