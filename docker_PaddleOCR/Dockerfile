@@ -8,7 +8,7 @@ LABEL maintainer="haobibo@gmail.com"
 
 COPY work /opt/utils/
 
-RUN source /opt/utils/script-setup.sh \
+RUN set -eux && source /opt/utils/script-setup.sh \
  # Step 1. install/update paddlepaddle
  && URL_PYPI_PADDLE="https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html" \
  && CUDA_VER=$(echo "${CUDA_VERSION:0:4}" | sed 's/\.//' ) \

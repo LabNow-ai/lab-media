@@ -9,7 +9,8 @@ CMD ["sh", "-c", "ls -alh /home && cp -r /home/* /tmp/"]
 ENV DIR_DATA="/home/"
 WORKDIR ${DIR_DATA}
 
-RUN mkdir opencv dlib openface openface_model_patch_experts \
+RUN set -eux \
+ && mkdir opencv dlib openface openface_model_patch_experts \
  && wget https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz             -O - | tar -zx --strip-components=1 -C ./opencv   \
  && wget https://github.com/davisking/dlib/archive/refs/tags/v19.24.tar.gz           -O - | tar -zx --strip-components=1 -C ./dlib     \
  && wget https://github.com/TadasBaltrusaitis/OpenFace/archive/OpenFace_2.2.0.tar.gz -O - | tar -zx --strip-components=1 -C ./openface \

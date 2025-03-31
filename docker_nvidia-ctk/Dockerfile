@@ -8,8 +8,7 @@ ENV DIR_DATA="/home/"
 WORKDIR ${DIR_DATA}
 CMD ["sh", "-c", "ls -alh /home && cp -r /home/* /tmp/"]
 
-RUN mkdir -pv libnvidia-container nvidia-container-runtime nvidia-docker \
- && wget https://api.github.com/repos/nvidia/libnvidia-container/tarball/gh-pages      -O - | tar -zx --strip-components=1 -C ./libnvidia-container \
- && wget https://api.github.com/repos/nvidia/nvidia-container-runtime/tarball/gh-pages -O - | tar -zx --strip-components=1 -C ./nvidia-container-runtime \
- && wget https://api.github.com/repos/nvidia/libnvidia-container/tarball/gh-pages      -O - | tar -zx --strip-components=1 -C ./nvidia-docker \
+RUN set -eux \
+ && mkdir -pv libnvidia-container nvidia-container-runtime nvidia-docker \
+ && wget https://api.github.com/repos/nvidia/libnvidia-container/tarball/gh-pages -O - | tar -zx --strip-components=1 -C ./libnvidia-container \
  && pwd && ls -alh && du -h -d1
