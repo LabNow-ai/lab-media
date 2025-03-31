@@ -67,22 +67,19 @@ jobs:
           build_image doc-ai-cuda120    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda120"    && push_image
 
 
-  qpod_OpenFace-src:
-    name: qpod/openface-src
+  qpod_OpenFace:
+    name: qpod/openface
+    needs: [ "qpod_OpenCV" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
-          source ./tool.sh && export IMG_PREFIX_SRC="docker.io/library"
-          build_image openface-src latest		docker_OpenFace/src.Dockerfile	&& push_image
+          source ./tool.sh
+          export IMG_PREFIX_SRC_BAK="${IMG_PREFIX_SRC}" && export IMG_PREFIX_SRC="docker.io/library"
+          build_image openface-src latest docker_OpenFace/src.Dockerfile	&& push_image src
+          export IMG_PREFIX_SRC="${IMG_PREFIX_SRC_BAK}"
+          build_image openface     latest docker_OpenFace/Dockerfile			&& push_image
 
-  qpod_OpenFace:
-    name: qpod/openface
-    needs: [ "qpod_OpenCV", "qpod_OpenFace-src" ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: source ./tool.sh && build_image openface latest			docker_OpenFace/Dockerfile				&& push_image
 
   # To build HF model image for a single model, simple run: `build_image_hf_model bert-base-cased`
   qpod_HuggingFaceModels:
