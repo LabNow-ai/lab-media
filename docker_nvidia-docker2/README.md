@@ -3,15 +3,12 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/qpod/nvidia-docker2.svg)](https://hub.docker.com/r/qpod/nvidia-docker2)
 [![Docker Starts](https://img.shields.io/docker/stars/qpod/nvidia-docker2.svg)](https://hub.docker.com/r/qpod/nvidia-docker2)
 
-This document and docker image helps you to install `nvidia-docker2` offline, which is especially usefull when your machine is in a restricted network.
+This document and docker image helps you to install `nvidia-docker2` offline, which is especially usefull when your machine is in a restricted / air-gapped network.
 
-## Install NVIDIA driver
-Firstly, make sure you have installed NVIDIA driver.
-You can download the run file and install it:
-- Download page: https://www.nvidia.com/Download/index.aspx
-- Document: https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
+## Step 1. Install NVIDIA driver
 
 Before you install the driver, please change the following configurations and restart your machine.
+
 ```bash
 sudo tee /etc/modprobe.d/blacklist-nouveau.conf <<< \
 "blacklist nouveau
@@ -21,18 +18,23 @@ options nouveau modeset=0
 sudo update-initramfs -u && sudo reboot
 ```
 
-## Install the `nvidia-docker2` Component
+After the proper configuration above, download and install NVIDIA driver (run file) for your hardware:
+
+- Download page: https://www.nvidia.com/Download/index.aspx
+- Document: https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
+
+## Step 2. Install the `nvidia-docker2` Component
 
 Originally, the component requires Internet connection or a mirror for the package manger.
 
 This docker image helps you to get the installation package into a docker image and you can export the files to your local file system.
 
-Please follow the instructions below to export install packages to your local file system and install them using your OS package mange (below is an example for Ubuntu).
+Please follow the instructions below to export install packages to your local file system and install them using your OS package manager (below is an example for Ubuntu).
 
 ```bash
 # choose a folder to store tmp files
 LOCAL_REPO="/tmp/nvidia-docker2"
-LINUX_DIST="ubuntu20.04"
+LINUX_DIST="ubuntu24.04"
 
 mkdir -pv ${LOCAL_REPO} && cd ${LOCAL_REPO}
 docker run --rm -it -v $(pwd):/tmp qpod/nvidia-docker2
