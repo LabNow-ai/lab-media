@@ -64,8 +64,7 @@ jobs:
       - run: |
           source ./tool.sh
           build_image paddleocr-cuda120 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_12.0"         && push_image
-          # TODO: change to py-nlp-cuda120
-          build_image doc-ai-cuda120    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_12.0"         && push_image
+          build_image doc-ai-cuda120    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda120"    && push_image
 
 
   qpod_OpenFace-src:
