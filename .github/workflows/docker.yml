@@ -52,19 +52,19 @@ jobs:
       - run: |
           source ./tool.sh && free_diskspace
           build_image paddleocr-cuda112 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_11.2"
-          build_image paddleocr-models  latest	docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda102" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"
+          build_image paddleocr-models  latest	docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda112" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"
           push_image && clear_images paddleocr
           build_image doc-ai-cuda112    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda112"    && push_image
 
-  qpod_PaddleOCR_cuda117:
-    name: qpod/paddleocr_cuda117
+  qpod_PaddleOCR_cuda126:
+    name: qpod/paddleocr_cuda126
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh
-          build_image paddleocr-cuda117 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_11.7"         && push_image
-          build_image doc-ai-cuda117    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda117"    && push_image
+          build_image paddleocr-cuda126 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_12.6"         && push_image
+          build_image doc-ai-cuda126    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda126"    && push_image
 
 
   qpod_OpenFace-src:
@@ -72,7 +72,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: source ./tool.sh && build_image openface-src latest		docker_OpenFace/src.Dockerfile	&& push_image
+      - run: |
+          source ./tool.sh && export IMG_PREFIX_SRC="docker.io/library"
+          build_image openface-src latest		docker_OpenFace/src.Dockerfile	&& push_image
 
   qpod_OpenFace:
     name: qpod/openface
