@@ -8,8 +8,7 @@ RUN set -eux \
  && mv ~/.paddleocr /opt/ && tree /opt/.paddleocr
 
 ARG BASE_NAMESPACE_SRC
-ARG BASE_IMG_DST="busybox"
-FROM ${BASE_NAMESPACE_SRC:+$BASE_NAMESPACE_SRC/}${BASE_IMG_DST}
+FROM ${BASE_NAMESPACE_SRC:+$BASE_NAMESPACE_SRC/}busybox
 COPY --from=builder /opt/.paddleocr /home/
 LABEL MODEL_NAME="paddleocr"
 LABEL maintainer="haobibo@gmail.com"

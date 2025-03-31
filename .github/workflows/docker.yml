@@ -56,15 +56,16 @@ jobs:
           push_image && clear_images paddleocr
           build_image doc-ai-cuda112    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda112"    && push_image
 
-  qpod_PaddleOCR_cuda126:
-    name: qpod/paddleocr_cuda126
+  qpod_PaddleOCR_cuda120:
+    name: qpod/paddleocr_cuda120
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh
-          build_image paddleocr-cuda126 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_12.6"         && push_image
-          build_image doc-ai-cuda126    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda126"    && push_image
+          build_image paddleocr-cuda120 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_12.0"         && push_image
+          # TODO: change to py-nlp-cuda120
+          build_image doc-ai-cuda120    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_12.0"         && push_image
 
 
   qpod_OpenFace-src:
