@@ -10,9 +10,9 @@ COPY work /opt/utils/
 
 RUN cd /tmp && source /opt/utils/script-utils.sh \
  && install_apt       /opt/utils/install_list_OpenCV.apt \
- && ln /dev/null /dev/raw1394 \
+ && ln -sf /dev/null /dev/raw1394 \
  ## Download and build OpenCV
- && install_tar_gz https://github.com/opencv/opencv/archive/refs/tags/4.5.5.tar.gz \
+ && install_tar_gz https://github.com/opencv/opencv/archive/refs/tags/4.11.0.tar.gz \
  && mv /opt/opencv-* /tmp/opencv \
  && cd /tmp/opencv && mkdir -p build && cd build \
  && cmake \
