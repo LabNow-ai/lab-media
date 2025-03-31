@@ -52,8 +52,6 @@ jobs:
       - run: |
           source ./tool.sh && free_diskspace
           build_image paddleocr-cuda112 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_11.2"
-          build_image paddleocr-models  latest	docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda112" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"
-          push_image && clear_images paddleocr
           build_image doc-ai-cuda112    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda112"    && push_image
 
   qpod_PaddleOCR_cuda120:
@@ -62,8 +60,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          source ./tool.sh
+          source ./tool.sh && free_diskspace
           build_image paddleocr-cuda120 latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=cuda_12.0"         && push_image
+          build_image paddleocr-models  latest	docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda112" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"
+          push_image && clear_images paddleocr
           build_image doc-ai-cuda120    latest	docker_PaddleOCR/Dockerfile        --build-arg "BASE_IMG=py-nlp-cuda120"    && push_image
 
 
