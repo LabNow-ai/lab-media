@@ -60,7 +60,7 @@ jobs:
 
   qpod_OpenFace:
     name: 'openface-src,openface'
-    needs: [ "qpod_OpenCV" ]
+    # needs: [ "qpod_OpenCV" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
