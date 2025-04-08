@@ -27,15 +27,6 @@ env:
   DOCKER_MIRROR_REGISTRY_PASSWORD: ${{ secrets.DOCKER_MIRROR_REGISTRY_PASSWORD }}
 
 jobs:
-  qpod_nvidia-ctk:
-    name: 'nvidia-ctk'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          source ./tool.sh && export IMG_PREFIX_SRC="docker.io/library"
-          build_image nvidia-ctk latest		docker_nvidia-ctk/Dockerfile		&& push_image
-
   qpod_OpenCV:
     name: 'opencv'
     runs-on: ubuntu-latest
@@ -87,17 +78,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
+      - env:
+          HF_MODEL_NAME: ${{ vars.HF_MODEL_NAME }}
+        run: |
           source tool.sh && export IMG_PREFIX_SRC="docker.io/library"
           source docker_HuggingFace-model/script-setup-huggingface.sh
           export -f download_hf_model build_image_hf_model build_image_no_tag push_image
-          HF_MODEL_NAME=$(sort --random-sort docker_HuggingFace-model/list_hf_models.txt | head -n1)
-          download_hf_model ${HF_MODEL_NAME} && build_image_hf_model ${HF_MODEL_NAME}
+          HF_MODEL_RANDOM=$(sort --random-sort docker_HuggingFace-model/list_hf_models.txt | head -n1)
+          download_hf_model ${HF_MODEL_NAME:-$HF_MODEL_RANDOM} && build_image_hf_model ${HF_MODEL_NAME}
 
 
   ## Sync all images in this build (listed by "names") to mirror registry.
   sync_images:
-    needs: ["qpod_nvidia-ctk", "qpod_OpenCV", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120", "qpod_HuggingFaceModels"]
+    needs: ["qpod_OpenCV", "qpod_HuggingFaceModels", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
