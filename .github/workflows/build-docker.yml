@@ -45,7 +45,7 @@ jobs:
 
 
   qpod_PaddleOCR_cuda112:
-    name: 'paddleocr-models'
+    name: 'paddleocr-models,paddleocr-cuda112'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -93,3 +93,20 @@ jobs:
           export -f download_hf_model build_image_hf_model build_image_no_tag push_image
           HF_MODEL_NAME=$(sort --random-sort docker_HuggingFace-model/list_hf_models.txt | head -n1)
           download_hf_model ${HF_MODEL_NAME} && build_image_hf_model ${HF_MODEL_NAME}
+
+
+  ## Sync all images in this build (listed by "names") to mirror registry.
+  sync_images:
+    needs: ["qpod_nvidia-ctk", "qpod_OpenCV", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120", "qpod_HuggingFaceModels"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          AUTH_FILE_CONTENT: ${{ secrets.AUTH_FILE_CONTENT }}
+          DOCKER_MIRROR_REGISTRY: ${{ vars.DOCKER_MIRROR_REGISTRY }}
+        run: |
+          source ./tool.sh
+          printf '%s' "$AUTH_FILE_CONTENT" > .github/workflows/auth.json && ls -alh ./.github/workflows
+          printenv | grep -v 'PATH' > /tmp/docker.env && echo "REGISTRY_URL=${REGISTRY_DST}" >> /tmp/docker.env
+          docker run --rm --env-file /tmp/docker.env -v $(pwd):/tmp -w /tmp ${IMG_PREFIX_DST:-qpod}/docker-kit \
+            python /opt/utils/image-syncer/run_jobs.py --auth-file=/tmp/.github/workflows/auth.json
