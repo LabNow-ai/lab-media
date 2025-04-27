@@ -11,5 +11,8 @@ RUN set -eux && source /opt/utils/script-setup.sh \
  # https://docs.vllm.ai/en/latest/getting_started/installation/gpu.html
  && git clone https://github.com/vllm-project/vllm.git \
  && cd /tmp/vllm \
- && export export MAX_JOBS=8 && pip install -e . \
+ && export export MAX_JOBS=8 \
+ && python use_existing_torch.py \
+ && pip install -r requirements/build.txt \
+ && pip install --no-build-isolation -e . \
  && install__clean && list_installed_packages
