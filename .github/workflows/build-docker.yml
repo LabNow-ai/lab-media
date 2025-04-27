@@ -18,7 +18,7 @@ concurrency:
 env:
   BUILDKIT_PROGRESS: "plain"  # Full logs for CI build.
   REGISTRY_SRC: ${{ vars.REGISTRY_SRC || 'docker.io' }} # For BASE_NAMESPACE of images: where to pull base images from, docker.io or other source registry URL.
-  REGISTRY_DST: ${{ vars.REGISTRY_DST || 'docker.io' }} # For tags of built images: where to push images to, docker.io or other destination registry URL.
+  REGISTRY_DST: ${{ vars.REGISTRY_DST || 'quay.io' }} # For tags of built images: where to push images to, docker.io or other destination registry URL.
   # DOCKER_REGISTRY_USERNAME and DOCKER_REGISTRY_PASSWORD is required for docker image push, they should be set in CI secrets.
   DOCKER_REGISTRY_USERNAME: ${{ vars.DOCKER_REGISTRY_USERNAME }}
   DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
@@ -45,6 +45,18 @@ jobs:
           build_image paddleocr-cuda112 latest docker_PaddleOCR/Dockerfile --build-arg "BASE_IMG=cuda_11.2"
           echo 'build_image paddleocr-models  latest docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda112" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"'
           push_image
+
+
+  qpod_vllm-cuda:
+    name: 'vllm-cuda'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          source ./tool.sh && free_diskspace && export IMG_PREFIX_SRC="${IMG_PREFIX_DST}"
+          build_image vllm-cuda latest docker_vllm/vllm-cuda.Dockerfile
+          push_image
+
 
   qpod_PaddleOCR_cuda120:
     name: 'paddleocr-cuda120,doc-ai-cuda120'
@@ -87,7 +99,7 @@ jobs:
 
   ## Sync all images in this build (listed by "names") to mirror registry.
   sync_images:
-    needs: ["qpod_OpenCV", "qpod_HuggingFaceModels", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120"]
+    needs: ["qpod_OpenCV", "qpod_HuggingFaceModels", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120", "qpod_vllm-cuda"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
