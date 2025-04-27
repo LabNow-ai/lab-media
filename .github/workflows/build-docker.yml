@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          source ./tool.sh && free_diskspace
+          source ./tool.sh && free_diskspace && export IMG_PREFIX_SRC="${IMG_PREFIX_DST}"
           build_image vllm-cuda latest docker_vllm/vllm-cuda.Dockerfile
           push_image
 
