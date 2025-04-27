@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh && free_diskspace
-          build_image vllm-cuda latest docker_vllm-cuda/vllm.Dockerfile
+          build_image vllm-cuda latest docker_vllm/vllm-cuda.Dockerfile
           push_image
 
 

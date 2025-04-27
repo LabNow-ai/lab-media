@@ -8,6 +8,7 @@ LABEL maintainer="haobibo@gmail.com"
 
 RUN set -eux && source /opt/utils/script-setup.sh \
  && cd /tmp/ \
+ # https://docs.vllm.ai/en/latest/getting_started/installation/gpu.html
  && git clone https://github.com/vllm-project/vllm.git \
  && cd /tmp/vllm \
  && export export MAX_JOBS=8 && pip install -e . \
