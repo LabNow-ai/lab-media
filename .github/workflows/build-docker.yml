@@ -26,15 +26,8 @@ env:
   DOCKER_MIRROR_REGISTRY_USERNAME: ${{ vars.DOCKER_MIRROR_REGISTRY_USERNAME }}
   DOCKER_MIRROR_REGISTRY_PASSWORD: ${{ secrets.DOCKER_MIRROR_REGISTRY_PASSWORD }}
 
+
 jobs:
-  qpod_OpenCV:
-    name: 'opencv'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: source ./tool.sh && build_image opencv latest docker_OpenCV/Dockerfile && push_image
-  
-  # paddleocr-models: temp disable the build caused by the paddle run on CPU server
   qpod_PaddleOCR_cuda112:
     name: 'paddleocr-cuda112'
     runs-on: ubuntu-latest
@@ -42,8 +35,20 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh && free_diskspace
-          build_image paddleocr-cuda112 latest docker_PaddleOCR/Dockerfile --build-arg "BASE_IMG=cuda_11.2"
-          echo 'build_image paddleocr-models  latest docker_PaddleOCR/models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda112" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"'
+          build_image paddleocr-cuda112 latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_11.2"
+          echo 'paddleocr-models: temp disable the build caused by the paddle run on CPU server'
+          echo 'build_image paddleocr-models  latest docker_PaddleOCR/paddle-ocr-models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda112" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"'
+          push_image
+
+  qpod_PaddleOCR_cuda120:
+    name: 'paddleocr-cuda120,doc-ai-cuda120'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          source ./tool.sh && free_diskspace
+          build_image paddleocr-cuda120 latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_12.0"
+          build_image doc-ai-cuda120    latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=py-nlp-cuda120"
           push_image
 
 
@@ -57,29 +62,29 @@ jobs:
           build_image vllm-cuda latest docker_vllm/vllm-cuda.Dockerfile
           push_image
 
-
-  qpod_PaddleOCR_cuda120:
-    name: 'paddleocr-cuda120,doc-ai-cuda120'
+  qpod_aidoc-miner:
+    name: 'aidoc-miner'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh && free_diskspace
-          build_image paddleocr-cuda120 latest docker_PaddleOCR/Dockerfile --build-arg "BASE_IMG=cuda_12.0"
-          build_image doc-ai-cuda120    latest docker_PaddleOCR/Dockerfile --build-arg "BASE_IMG=py-nlp-cuda120"
+          build_image aidoc-miner latest docker_aidoc/miner.Dockerfile --build-arg "BASE_IMG=py-nlp-cuda128"
           push_image
 
 
   qpod_OpenFace:
-    name: 'openface-src,openface'
-    # needs: [ "qpod_OpenCV" ]
+    name: 'opencv,openface-src,openface'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
-          source ./tool.sh
-          export IMG_PREFIX_SRC="docker.io/library" && build_image openface-src latest docker_OpenFace/OpenFace-src.Dockerfile && push_image src
-          export IMG_PREFIX_SRC="${IMG_PREFIX_DST}" && build_image openface     latest docker_OpenFace/OpenFace.Dockerfile     && push_image openface
+          source ./tool.sh &&
+          export IMG_PREFIX_SRC="docker.io/library"
+          build_image openface-src latest docker_OpenFace/OpenFace-src.Dockerfile && push_image openface-src
+          export IMG_PREFIX_SRC="${IMG_PREFIX_DST}"
+          build_image opencv       latest docker_OpenFace/OpenCV.Dockerfile       && push_image opencv
+          build_image openface     latest docker_OpenFace/OpenFace.Dockerfile     && push_image openface
 
   # To build HF model image for a single model, simple run: `build_image_hf_model bert-base-cased`
   qpod_HuggingFaceModels:
@@ -90,16 +95,17 @@ jobs:
       - env:
           HF_MODEL_NAME: ${{ vars.HF_MODEL_NAME }}
         run: |
-          source tool.sh && export IMG_PREFIX_SRC="docker.io/library"
-          source docker_HuggingFace-model/script-setup-huggingface.sh
-          export -f download_hf_model build_image_hf_model build_image_no_tag push_image
+          source tool.sh && export -f build_image_no_tag push_image free_diskspace && free_diskspace
+          source docker_HuggingFace-model/script-setup-huggingface.sh && export -f download_hf_model build_image_hf_model
           HF_MODEL_RANDOM=$(sort --random-sort docker_HuggingFace-model/list_hf_models.txt | head -n1)
-          download_hf_model ${HF_MODEL_NAME:-$HF_MODEL_RANDOM} && build_image_hf_model ${HF_MODEL_NAME}
+          download_hf_model ${HF_MODEL_NAME:-$HF_MODEL_RANDOM}
+          export IMG_PREFIX_SRC="docker.io/library"
+          build_image_hf_model ${HF_MODEL_NAME}
 
 
   ## Sync all images in this build (listed by "names") to mirror registry.
   sync_images:
-    needs: ["qpod_OpenCV", "qpod_HuggingFaceModels", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120", "qpod_vllm-cuda"]
+    needs: ["qpod_OpenFace", "qpod_HuggingFaceModels", "qpod_aidoc-miner", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120", "qpod_vllm-cuda"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
