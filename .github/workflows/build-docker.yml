@@ -47,8 +47,8 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh && free_diskspace
-          build_image paddleocr-cuda120 latest docker_PaddleOCR/paddle-ocrDockerfile --build-arg "BASE_IMG=cuda_12.0"
-          build_image doc-ai-cuda120    latest docker_PaddleOCR/paddle-ocrDockerfile --build-arg "BASE_IMG=py-nlp-cuda120"
+          build_image paddleocr-cuda120 latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_12.0"
+          build_image doc-ai-cuda120    latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=py-nlp-cuda120"
           push_image
 
 
