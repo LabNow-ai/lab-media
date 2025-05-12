@@ -79,10 +79,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          source ./tool.sh && export IMG_PREFIX_SRC="docker.io/library"
-          build_image opencv       latest docker_OpenFace/OpenCV.Dockerfile       && push_image opencv
+          source ./tool.sh &&
+          export IMG_PREFIX_SRC="docker.io/library"
           build_image openface-src latest docker_OpenFace/OpenFace-src.Dockerfile && push_image openface-src
           export IMG_PREFIX_SRC="${IMG_PREFIX_DST}"
+          build_image opencv       latest docker_OpenFace/OpenCV.Dockerfile       && push_image opencv
           build_image openface     latest docker_OpenFace/OpenFace.Dockerfile     && push_image openface
 
   # To build HF model image for a single model, simple run: `build_image_hf_model bert-base-cased`
