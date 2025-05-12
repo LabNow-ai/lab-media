@@ -1,0 +1,25 @@
+# Distributed under the terms of the Modified BSD License.
+
+# reference: https://github.com/opendatalab/MinerU/blob/master/docker/china/Dockerfile
+
+ARG BASE_NAMESPACE
+ARG BASE_IMG="py-nlp-cuda128"
+FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
+
+LABEL maintainer="haobibo@gmail.com"
+
+RUN set -eux \
+ # ----------
+ && apt-get update \
+ && mkdir -pv /usr/share/man/man1 \
+ && apt-get -qq install -yq --no-install-recommends openjdk-21-jre-headless \
+ && apt-get -qq install -yq --no-install-recommends \
+     libgl1 libglib2.0-0 libxrender1 libsm6 libxext6 \
+     fontconfig ttf-mscorefonts-installer \
+     fonts-noto-cjk fonts-wqy-zenhei fonts-wqy-microhei \
+     libreoffice poppler-utils \
+ && pip install -U magic-pdf[full] modelscope \
+ # ----------
+ && rm -rf /var/lib/apt/lists/* \
+ && source /opt/utils/script-setup.sh \
+ && install__clean && list_installed_packages

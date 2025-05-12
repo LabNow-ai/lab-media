@@ -57,6 +57,15 @@ jobs:
           build_image vllm-cuda latest docker_vllm/vllm-cuda.Dockerfile
           push_image
 
+  qpod_aidoc-miner:
+    name: 'aidoc-miner'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          source ./tool.sh && free_diskspace
+          build_image aidoc-miner latest docker_aidoc/miner.Dockerfile --build-arg "BASE_IMG=py-nlp-cuda128"
+          push_image
 
   qpod_PaddleOCR_cuda120:
     name: 'paddleocr-cuda120,doc-ai-cuda120'
@@ -99,7 +108,7 @@ jobs:
 
   ## Sync all images in this build (listed by "names") to mirror registry.
   sync_images:
-    needs: ["qpod_OpenCV", "qpod_HuggingFaceModels", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120", "qpod_vllm-cuda"]
+    needs: ["qpod_OpenCV", "qpod_HuggingFaceModels", "qpod_aidoc-miner", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120", "qpod_vllm-cuda"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
