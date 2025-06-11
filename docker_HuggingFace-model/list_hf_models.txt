@@ -1,3 +1,5 @@
+Qwen/Qwen3-Embedding-0.6B
+Qwen/Qwen3-Reranker-0.6B
 answerdotai/ModernBERT-base
 answerdotai/ModernBERT-large
 BAAI/bge-m3
