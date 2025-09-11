@@ -1,14 +1,14 @@
 # Distributed under the terms of the Modified BSD License.
 
 ARG BASE_NAMESPACE
-ARG BASE_IMG="torch-cuda126"
+ARG BASE_IMG="torch-cuda128"
 FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 
-LABEL maintainer="haobibo@gmail.com"
+LABEL maintainer="postmaster@labnow.ai"
 
+# https://docs.vllm.ai/en/latest/getting_started/installation/gpu.html
 RUN set -eux && source /opt/utils/script-setup.sh \
  && pip install vllm \
- # https://docs.vllm.ai/en/latest/getting_started/installation/gpu.html
  # && cd /tmp/ \
  # && git clone https://github.com/vllm-project/vllm.git \
  # && cd /tmp/vllm \

@@ -11,6 +11,6 @@ ARG BASE_NAMESPACE_SRC
 FROM ${BASE_NAMESPACE_SRC:+$BASE_NAMESPACE_SRC/}busybox
 COPY --from=builder /opt/.paddleocr /home/
 LABEL MODEL_NAME="paddleocr"
-LABEL maintainer="haobibo@gmail.com"
+LABEL maintainer="postmaster@labnow.ai"
 LABEL usage="docker run --rm -it -v $(pwd):/tmp `docker-image-name`"
 CMD ["sh", "-c", "ls -alh /home && cp -r /home/* /tmp/"]
