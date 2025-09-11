@@ -1,7 +1,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 ARG BASE_NAMESPACE
-ARG BASE_IMG="paddle-cuda116"
+ARG BASE_IMG="paddle-3.0"
 FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG} AS builder
 RUN set -eux \
  && python /opt/utils/download_paddleocr_models.py \

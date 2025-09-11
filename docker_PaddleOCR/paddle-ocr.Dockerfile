@@ -1,7 +1,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 ARG BASE_NAMESPACE
-ARG BASE_IMG="paddle-cuda"
+ARG BASE_IMG="paddle-3.0"
 FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 
 LABEL maintainer="postmaster@labnow.ai"

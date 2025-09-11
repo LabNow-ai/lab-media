@@ -28,27 +28,25 @@ env:
   CI_PROJECT_NAME: ${{ vars.CI_PROJECT_NAME || 'LabNow/lab-media' }}
 
 jobs:
-  job-PaddleOCR_cuda112:
-    name: 'paddleocr-cuda112'
+  job-PaddleOCR:
+    name: 'paddleocr'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh && free_diskspace
-          build_image paddleocr-cuda112 latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_11.2"
-          echo 'paddleocr-models: temp disable the build caused by the paddle run on CPU server'
-          echo 'build_image paddleocr-models  latest docker_PaddleOCR/paddle-ocr-models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda112" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"'
+          build_image paddleocr-cuda   latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_12.8"
+          build_image paddleocr-models latest docker_PaddleOCR/paddle-ocr-models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"
           push_image
 
-  job-PaddleOCR_cuda120:
+  job-doc-ai:
     name: 'paddleocr-cuda120,doc-ai-cuda120'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh && free_diskspace
-          build_image paddleocr-cuda120 latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_12.0"
-          build_image doc-ai-cuda120    latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=py-nlp-cuda120"
+          build_image doc-ai-cuda    latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=py-nlp-cuda128"
           push_image
 
 
@@ -105,7 +103,7 @@ jobs:
 
   ## Sync all images in this build (listed by "names") to mirror registry.
   sync_images:
-    needs: ["job-OpenFace", "job-HuggingFaceModels", "job-aidoc-miner", "job-PaddleOCR_cuda112", "job-PaddleOCR_cuda120", "job-vllm-cuda"]
+    needs: ["job-OpenFace", "job-HuggingFaceModels", "job-aidoc-miner", "job-PaddleOCR", "job-doc-ai", "job-vllm-cuda"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
