@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xu
 
-CI_PROJECT_NAME=${GITHUB_REPOSITORY:-"QPod/lab-media"}
+CI_PROJECT_NAME=${GITHUB_REPOSITORY:-"LabNow-ai/lab-media"}
 CI_PROJECT_BRANCH=${GITHUB_HEAD_REF:-"main"}
 CI_PROJECT_SPACE=$(echo "${CI_PROJECT_BRANCH}" | cut -f1 -d'/')
 
