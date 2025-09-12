@@ -13,7 +13,7 @@ RUN set -eux && source /opt/utils/script-setup.sh \
  && export IDX=$( [ -x "$(command -v nvcc)" ] && echo "cu${CUDA_VER:-117}" || echo "cpu" ) \
  && echo "Detected CUDA version=${CUDA_VER} and IDX=${IDX}" \
  # -----------------------------
- && pip install vllm --index-url "https://download.pytorch.org/whl/${IDX}" --extra-index-url "https://pypi.org/simple" \
+ && pip install vllm --index-url "https://download.pytorch.org/whl/${IDX}" \
  # && cd /tmp/ \
  # && git clone https://github.com/vllm-project/vllm.git \
  # && cd /tmp/vllm \

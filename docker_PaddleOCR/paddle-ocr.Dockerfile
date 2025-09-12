@@ -18,7 +18,7 @@ RUN set -eux && source /opt/utils/script-setup.sh \
  && URL_PYPI_PADDLE="https://www.paddlepaddle.org.cn/packages/stable/${IDX}/" \
  && CUDA_VER=$(echo "${CUDA_VERSION:0:4}" | sed 's/\.//' ) \
  && PADDLE=$( [ -x "$(command -v nvcc)" ] && echo "paddlepaddle-gpu" || echo "paddlepaddle") \
- && PADDLE_VER=$(pip index versions ${PADDLE} -i ${URL_PYPI_PADDLE} | grep 'Available' | cut -d ":" -f 2 | tr ', ' '\n' | grep ${CUDA_VER:-'.'} | head -n 1) \
+ && PADDLE_VER=$(pip index versions ${PADDLE} -i ${URL_PYPI_PADDLE} | grep 'Available' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1) \
  && V=$(echo ${PADDLE}==${PADDLE_VER}) && echo "to install paddle: ${V}" \
  && pip install ${V} -i ${URL_PYPI_PADDLE} \
  # Step 2. install required OS libs for PaddleOCR, mainly for images processing
