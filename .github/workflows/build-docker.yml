@@ -36,11 +36,12 @@ jobs:
       - run: |
           source ./tool.sh && free_diskspace
           build_image paddleocr-cuda   latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_12.6"
-          build_image paddleocr-models latest docker_PaddleOCR/paddle-ocr-models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"
+          echo 'Skipping paddleocr-models build for now'
+          echo 'build_image paddleocr-models latest docker_PaddleOCR/paddle-ocr-models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"'
           push_image
 
   job-doc-ai:
-    name: 'paddleocr-cuda120,doc-ai-cuda120'
+    name: 'doc-ai-cuda126'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

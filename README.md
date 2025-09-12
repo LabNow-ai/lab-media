@@ -20,7 +20,8 @@ Discussion and contributions are welcome:
 `LabNow lab-media` (
     [DockerHub](https://hub.docker.com/u/labnow)
     | [quay.io](https://quay.io/organization/labnow)
-    | [GitHub](https://github.com/LabNow-ai/lab-media) )  provides building blocks for the following AI and multi-modal / multi-media project use cases are supported in this project:
+    | [GitHub](https://github.com/LabNow-ai/lab-media)
+)  provides building blocks for the following AI and multi-modal / multi-media project use cases are supported in this project:
 
 - [Transformer models based on HuggingFace transformers](https://hub.docker.com/r/labnow/huggingface-model/tags)
 - [OCR (based on paddlepaddle)](https://hub.docker.com/search?q=labnow%2Fpaddleocr) and [Document Intelligence](https://hub.docker.com/search?q=labnow%2Fdoc-ai)
