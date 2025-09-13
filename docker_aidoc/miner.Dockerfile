@@ -6,7 +6,7 @@ ARG BASE_NAMESPACE
 ARG BASE_IMG="py-nlp-cuda128"
 FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 
-LABEL maintainer="haobibo@gmail.com"
+LABEL maintainer="postmaster@labnow.ai"
 
 RUN set -eux \
  # ----------

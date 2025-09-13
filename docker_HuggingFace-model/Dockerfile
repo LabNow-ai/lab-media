@@ -5,7 +5,7 @@ FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 ARG HF_MODEL_NAME="answerdotai/ModernBERT-base"
 
 LABEL HF_MODEL_NAME="${HF_MODEL_NAME}"
-LABEL maintainer="haobibo@gmail.com"
+LABEL maintainer="postmaster@labnow.ai"
 LABEL usage="docker run --rm -it -v $(pwd):/tmp `docker-image-name`"
 CMD ["sh", "-c", "ls -alh /home && cp -rf /home/* /tmp/"]
 

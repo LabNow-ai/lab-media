@@ -6,7 +6,7 @@ FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}  AS runtime
 
 FROM runtime
 
-LABEL maintainer="haobibo@gmail.com"
+LABEL maintainer="postmaster@labnow.ai"
 
 COPY --from=source /home /tmp
 COPY work /opt/utils/

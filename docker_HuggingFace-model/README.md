@@ -1,7 +1,7 @@
 # Store and Download Huggingface Models via docker images
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/qpod/huggingface-model.svg)](https://hub.docker.com/r/qpod/huggingface-model)
-[![Docker Starts](https://img.shields.io/docker/stars/qpod/huggingface-model.svg)](https://hub.docker.com/r/qpod/huggingface-model)
+[![Docker Pulls](https://img.shields.io/docker/pulls/labnow/huggingface-model.svg)](https://hub.docker.com/r/labnow/huggingface-model)
+[![Docker Starts](https://img.shields.io/docker/stars/labnow/huggingface-model.svg)](https://hub.docker.com/r/labnow/huggingface-model)
 
 These docker images help you to store and download Huggingface Models via docker images.
 
@@ -12,7 +12,7 @@ This is especially useful when you are:
 
 ## Download HuggingFace Models as docker images
 
-You can download the model files simply using `docker pull qpod/huggingface-model:bert-base-cased`, in which the tag name is the HuggingFace model repo name.
+You can download the model files simply using `docker pull labnow/huggingface-model:bert-base-cased`, in which the tag name is the HuggingFace model repo name.
 
 The models files are stored at the `/home` directory in the docker images by default.
 
@@ -25,26 +25,26 @@ For example, given a HuggingFace model `HF_MODEL_NAME='microsoft/DialoGPT-small'
 
 The shell code to do this conversion is: `HF_MODEL_TAG=$(echo ${HF_MODEL_NAME} | sed 's/\//./g' | tr '[:upper:]' '[:lower:]')`.
 
-We have alrady pre-built several popular models, you can find a list of models here: https://hub.docker.com/r/qpod/huggingface-model/tags
+We have alrady pre-built several popular models, you can find a list of models here: https://hub.docker.com/r/labnow/huggingface-model/tags
 
 ## Export the model files to local file system
 
 You can use the following commnad to export the model files stored in the docker images to your local file system.
 
 ```bash
-# for model names, refer to dockerhub: https://hub.docker.com/r/qpod/huggingface-model/tags
+# for model names, refer to dockerhub: https://hub.docker.com/r/labnow/huggingface-model/tags
 MODEL_NAME="bert-base-chinese"
 
 # choose a folder to store model files
 LOCAL_REPO="/tmp/models"
 
 mkdir -pv ${LOCAL_REPO} && cd ${LOCAL_REPO}
-docker run --rm -it -v $(pwd):/tmp "qpod/huggingface-model:${MODEL_NAME}"
+docker run --rm -it -v $(pwd):/tmp "labnow/huggingface-model:${MODEL_NAME}"
 ```
 
 ## Build your own docker image which stores a customized HF model
 
-refer to: https://github.com/QPod/media-lab/tree/main/docker_HuggingFace-model
+refer to: https://github.com/LabNow-ai/lab-media/tree/main/docker_HuggingFace-model
 
 ```bash
 source tool.sh && source docker_HuggingFace-model/script-setup-huggingface.sh

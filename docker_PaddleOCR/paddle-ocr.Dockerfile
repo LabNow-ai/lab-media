@@ -1,21 +1,26 @@
 # Distributed under the terms of the Modified BSD License.
 
 ARG BASE_NAMESPACE
-ARG BASE_IMG="paddle-cuda"
+ARG BASE_IMG="paddle-3.0"
 FROM ${BASE_NAMESPACE:+$BASE_NAMESPACE/}${BASE_IMG}
 
-LABEL maintainer="haobibo@gmail.com"
+LABEL maintainer="postmaster@labnow.ai"
 
 COPY work /opt/utils/
 
 RUN set -eux && source /opt/utils/script-setup.sh \
+ # -----------------------------
+ && export CUDA_VER=$(echo ${CUDA_VERSION:-"999"} | cut -c1-4 | sed 's/\.//' ) \
+ && export IDX=$( [ -x "$(command -v nvcc)" ] && echo "cu${CUDA_VER:-117}" || echo "cpu" ) \
+ && echo "Detected CUDA version=${CUDA_VER} and IDX=${IDX}" \
+ # -----------------------------
  # Step 1. install/update paddlepaddle
- && URL_PYPI_PADDLE="https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html" \
+ && URL_PYPI_PADDLE="https://www.paddlepaddle.org.cn/packages/stable/${IDX}/" \
  && CUDA_VER=$(echo "${CUDA_VERSION:0:4}" | sed 's/\.//' ) \
  && PADDLE=$( [ -x "$(command -v nvcc)" ] && echo "paddlepaddle-gpu" || echo "paddlepaddle") \
- && PADDLE_VER=$(pip index versions ${PADDLE} -f ${URL_PYPI_PADDLE} | grep 'Available' | cut -d ":" -f 2 | tr ', ' '\n' | grep ${CUDA_VER:-'.'} | head -n 1) \
+ && PADDLE_VER=$(pip index versions ${PADDLE} -i ${URL_PYPI_PADDLE} | grep 'Available' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1) \
  && V=$(echo ${PADDLE}==${PADDLE_VER}) && echo "to install paddle: ${V}" \
- && pip install ${V} -f ${URL_PYPI_PADDLE} \
+ && pip install ${V} -i ${URL_PYPI_PADDLE} \
  # Step 2. install required OS libs for PaddleOCR, mainly for images processing
  && apt-get -qq update -yq --fix-missing && apt-get -qq install -yq --no-install-recommends libgl1 libglib2.0-0 \
  # Step 3. install PaddleOCR

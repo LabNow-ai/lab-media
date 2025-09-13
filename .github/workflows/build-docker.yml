@@ -25,34 +25,33 @@ env:
   # used to sync image to mirror registry
   DOCKER_MIRROR_REGISTRY_USERNAME: ${{ vars.DOCKER_MIRROR_REGISTRY_USERNAME }}
   DOCKER_MIRROR_REGISTRY_PASSWORD: ${{ secrets.DOCKER_MIRROR_REGISTRY_PASSWORD }}
-
+  CI_PROJECT_NAME: ${{ vars.CI_PROJECT_NAME || 'LabNow/lab-media' }}
 
 jobs:
-  qpod_PaddleOCR_cuda112:
-    name: 'paddleocr-cuda112'
+  job-PaddleOCR:
+    name: 'paddleocr-cuda'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh && free_diskspace
-          build_image paddleocr-cuda112 latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_11.2"
-          echo 'paddleocr-models: temp disable the build caused by the paddle run on CPU server'
-          echo 'build_image paddleocr-models  latest docker_PaddleOCR/paddle-ocr-models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda112" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"'
+          build_image paddleocr-cuda   latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_12.6"
+          echo 'Skipping paddleocr-models build for now'
+          echo 'build_image paddleocr-models latest docker_PaddleOCR/paddle-ocr-models.Dockerfile --build-arg "BASE_IMG=paddleocr-cuda" --build-arg "BASE_NAMESPACE_SRC=docker.io/library"'
           push_image
 
-  qpod_PaddleOCR_cuda120:
-    name: 'paddleocr-cuda120,doc-ai-cuda120'
+  job-doc-ai:
+    name: 'doc-ai-cuda126'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
           source ./tool.sh && free_diskspace
-          build_image paddleocr-cuda120 latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=cuda_12.0"
-          build_image doc-ai-cuda120    latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=py-nlp-cuda120"
+          build_image doc-ai-cuda126   latest docker_PaddleOCR/paddle-ocr.Dockerfile --build-arg "BASE_IMG=py-nlp-cuda126"
           push_image
 
 
-  qpod_vllm-cuda:
+  job-vllm-cuda:
     name: 'vllm-cuda'
     runs-on: ubuntu-latest
     steps:
@@ -62,7 +61,7 @@ jobs:
           build_image vllm-cuda latest docker_vllm/vllm-cuda.Dockerfile
           push_image
 
-  qpod_aidoc-miner:
+  job-aidoc-miner:
     name: 'aidoc-miner'
     runs-on: ubuntu-latest
     steps:
@@ -73,7 +72,7 @@ jobs:
           push_image
 
 
-  qpod_OpenFace:
+  job-OpenFace:
     name: 'opencv,openface-src,openface'
     runs-on: ubuntu-latest
     steps:
@@ -87,7 +86,7 @@ jobs:
           build_image openface     latest docker_OpenFace/OpenFace.Dockerfile     && push_image openface
 
   # To build HF model image for a single model, simple run: `build_image_hf_model bert-base-cased`
-  qpod_HuggingFaceModels:
+  job-HuggingFaceModels:
     name: 'huggingface-model'
     runs-on: ubuntu-latest
     steps:
@@ -105,7 +104,7 @@ jobs:
 
   ## Sync all images in this build (listed by "names") to mirror registry.
   sync_images:
-    needs: ["qpod_OpenFace", "qpod_HuggingFaceModels", "qpod_aidoc-miner", "qpod_PaddleOCR_cuda112", "qpod_PaddleOCR_cuda120", "qpod_vllm-cuda"]
+    needs: ["job-OpenFace", "job-HuggingFaceModels", "job-aidoc-miner", "job-PaddleOCR", "job-doc-ai", "job-vllm-cuda"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -116,5 +115,5 @@ jobs:
           source ./tool.sh
           printf '%s' "$AUTH_FILE_CONTENT" > .github/workflows/auth.json && ls -alh ./.github/workflows
           printenv | grep -v 'PATH' > /tmp/docker.env && echo "REGISTRY_URL=${REGISTRY_DST}" >> /tmp/docker.env
-          docker run --rm --env-file /tmp/docker.env -v $(pwd):/tmp -w /tmp ${IMG_PREFIX_DST:-qpod}/docker-kit \
+          docker run --rm --env-file /tmp/docker.env -v $(pwd):/tmp -w /tmp ${IMG_PREFIX_DST:-labnow}/docker-kit \
             python /opt/utils/image-syncer/run_jobs.py --auth-file=/tmp/.github/workflows/auth.json
