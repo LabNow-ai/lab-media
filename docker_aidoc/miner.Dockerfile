@@ -20,6 +20,10 @@ RUN set -eux \
      libreoffice poppler-utils \
  && pip install -U magic-pdf[full] modelscope \
  # ----------
+ && echo "Try to uninstall nvidia python packages to reduce storage size..." \
+ && pip freeze | grep -i '^nvidia-' | cut -d'=' -f1 | xargs -r pip uninstall -y \
+ && apt-get -qq update --fix-missing && apt-get -qq install -y --no-install-recommends --allow-change-held-packages libcusparselt0 libnccl2 libnccl-dev \
+ # ----------
  && rm -rf /var/lib/apt/lists/* \
  && source /opt/utils/script-setup.sh \
  && install__clean && list_installed_packages
