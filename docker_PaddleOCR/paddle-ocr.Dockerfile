@@ -27,5 +27,9 @@ RUN set -eux && source /opt/utils/script-setup.sh \
  && pip install -U --no-cache-dir paddleocr \
  # Step 4. install PaddleOCR fixes for Python>=3.10 compatibility
  && pip uninstall -y attrdict && pip install -UI --no-cache-dir attrdict3 \
- # Step 5. cleanup
+ # Step 5. uninstall nvidia python packages if any
+ && echo "Try to uninstall nvidia python packages to reduce storage size..." \
+ && pip freeze | grep -i '^nvidia-' | cut -d'=' -f1 | xargs -r pip uninstall -y \
+ && apt-get -qq update --fix-missing && apt-get -qq install -y --no-install-recommends --allow-change-held-packages libcusparselt0 libnccl2 libnccl-dev \
+ # Step 6. cleanup
  && install__clean && list_installed_packages

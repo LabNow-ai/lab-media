@@ -14,6 +14,9 @@ RUN set -eux && source /opt/utils/script-setup.sh \
  && echo "Detected CUDA version=${CUDA_VER} and IDX=${IDX}" \
  # -----------------------------
  && pip install vllm --index-url "https://download.pytorch.org/whl/${IDX}" --extra-index-url https://pypi.org/simple \
+ && echo "Try to uninstall nvidia python packages to reduce storage size..." \
+ && pip freeze | grep -i '^nvidia-' | cut -d'=' -f1 | xargs -r pip uninstall -y \
+ && apt-get -qq update --fix-missing && apt-get -qq install -y --no-install-recommends --allow-change-held-packages libcusparselt0 libnccl2 libnccl-dev \
  # && cd /tmp/ \
  # && git clone https://github.com/vllm-project/vllm.git \
  # && cd /tmp/vllm \
